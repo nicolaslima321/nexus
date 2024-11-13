@@ -1,26 +1,54 @@
 import { Injectable } from '@nestjs/common';
 import { CreateSurvivorDto } from './dto/create-survivor.dto';
 import { UpdateSurvivorDto } from './dto/update-survivor.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Survivor } from './entities/survivor.entity';
+import { Repository } from 'typeorm';
+import { Inventory } from './entities/inventory.entity';
 
 @Injectable()
 export class SurvivorsService {
-  create(createSurvivorDto: CreateSurvivorDto) {
-    return 'This action adds a new survivor';
+  constructor(
+    @InjectRepository(Survivor)
+    private readonly survivorRepository: Repository<Survivor>,
+    @InjectRepository(Inventory)
+    private readonly inventoryRepository: Repository<Inventory>,
+  ) {}
+
+  async create(createSurvivorDto: CreateSurvivorDto): Promise<Survivor> {
+    const survivor = this.survivorRepository.create(createSurvivorDto);
+
+    return await this.survivorRepository.save(survivor);
   }
 
-  findAll() {
-    return `This action returns all survivors`;
+  async findAll(): Promise<Survivor[]> {
+    return await this.survivorRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} survivor`;
+  async findOne(id: number): Promise<Survivor> {
+    return await this.survivorRepository.findOneBy({ id });
   }
 
-  update(id: number, updateSurvivorDto: UpdateSurvivorDto) {
-    return `This action updates a #${id} survivor`;
+  async update(id: number, updateSurvivorDto: UpdateSurvivorDto): Promise<void> {
+    const survivor = await this.survivorRepository.findOneBy({ id });
+
+    const updatedSurvivor = {
+      ...survivor,
+      ...updateSurvivorDto,
+    }
+
+    await this.survivorRepository.update(survivor, updatedSurvivor);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} survivor`;
+  async remove(id: number): Promise<void> {
+    await this.survivorRepository.delete(id);
+  }
+
+  async exchangeItems() {
+    return {};
+  }
+
+  async generateReports() {
+    return {};
   }
 }

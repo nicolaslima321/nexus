@@ -8,27 +8,32 @@ export class SurvivorsController {
   constructor(private readonly survivorsService: SurvivorsService) {}
 
   @Post()
-  create(@Body() createSurvivorDto: CreateSurvivorDto) {
+  createSurvivor(@Body() createSurvivorDto: CreateSurvivorDto) {
     return this.survivorsService.create(createSurvivorDto);
   }
 
   @Get()
-  findAll() {
+  getAllSurvivors() {
     return this.survivorsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findSurvivorById(@Param('id') id: string) {
     return this.survivorsService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSurvivorDto: UpdateSurvivorDto) {
+  updateSurvivor(@Param('id') id: string, @Body() updateSurvivorDto: UpdateSurvivorDto) {
     return this.survivorsService.update(+id, updateSurvivorDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  removeSurvivor(@Param('id') id: string) {
     return this.survivorsService.remove(+id);
+  }
+
+  @Get('reports')
+  getReportsOfSurvivors() {
+    return {};
   }
 }
