@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn, CreateDateColumn } from 'typeorm';
 import { Inventory } from './inventory.entity';
 import { genderEnum } from 'src/enums';
 
@@ -21,6 +21,9 @@ export class Survivor {
 
   @Column('boolean')
   infected: boolean;
+
+  @CreateDateColumn()
+  createdAt: Date;
 
   @OneToOne(() => Inventory, (inventory) => inventory.survivor)
   @JoinColumn()
