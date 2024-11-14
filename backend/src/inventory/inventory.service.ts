@@ -7,7 +7,6 @@ import { Item } from 'src/entities/item.entity';
 import { ItemDto } from './dto/item.dto';
 import { InventoryItem } from 'src/entities/inventory-item.entity';
 import { ExchangeDto } from './dto/exchange.dto';
-import { SurvivorsService } from 'src/survivors/survivors.service';
 
 @Injectable()
 export class InventoryService {
@@ -15,12 +14,11 @@ export class InventoryService {
     @InjectRepository(Inventory)
     private readonly inventoryRepository: Repository<Inventory>,
     @InjectRepository(InventoryItem)
-    private readonly inventoryItemRepository: Repository<Inventory>,
+    private readonly inventoryItemRepository: Repository<InventoryItem>,
     @InjectRepository(Item)
     private readonly itemRepository: Repository<Item>,
     @InjectRepository(Survivor)
     private readonly survivorRepository: Repository<Survivor>,
-    private readonly survivorService: SurvivorsService
   ) {}
 
   async initializeSurvivorInventory(survivor: Survivor) {
@@ -35,18 +33,18 @@ export class InventoryService {
     return inventory;
   }
 
-  async addItemOnSurvivorInventory(item: ItemDto, survivorId: number) {
-    const survivor = await this.survivorService.findWithInventory(survivorId);
-
+  async addItemOnSurvivorInventory(item: ItemDto, survivor: Survivor) {
     const { itemId } = item;
 
     if (this.itemExists(itemId)) {
       const inventoryItem = await this.inventoryItemRepository.create({
         ...ItemDto,
-        inventory: survivor.inventory.id,
+        inventory: survivor.inventory,
       });
 
       await this.inventoryItemRepository.save(inventoryItem);
+
+      return inventoryItem;
     } else {
       throw new BadRequestException('Provided item to add on inventory does not exists!');
     }

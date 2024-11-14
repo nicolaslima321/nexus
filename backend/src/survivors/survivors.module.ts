@@ -9,6 +9,8 @@ import { ItemRepository } from '../entities/item.repository';
 import { Inventory } from '../entities/inventory.entity';
 import { InventoryRepository } from '../entities/inventory.repository';
 import { InventoryService } from 'src/inventory/inventory.service';
+import { InventoryItem } from 'src/entities/inventory-item.entity';
+import { InventoryItemRepository } from 'src/entities/inventory-item.repository';
 
 @Module({
   imports: [
@@ -19,6 +21,8 @@ import { InventoryService } from 'src/inventory/inventory.service';
       ItemRepository,
       Inventory,
       InventoryRepository,
+      InventoryItem,
+      InventoryItemRepository,
     ]),
   ],
   controllers: [SurvivorsController],
