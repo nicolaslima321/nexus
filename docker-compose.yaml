@@ -1,6 +1,21 @@
 services:
+  frontend:
+    container_name: frontend
+    restart: always
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "8080:3000"
+    expose:
+      - "3000"
+    command: "yarn dev"
+    depends_on:
+      - backend
   backend:
-    image: "node:latest"
     container_name: backend
     restart: always
     build:
@@ -15,7 +30,7 @@ services:
       - "3000"
     command: "yarn start"
     env_file:
-     - ./.env
+     - ./backend/.env
     depends_on:
       - pg-database
   pg-database:
@@ -25,7 +40,7 @@ services:
     ports:
      - "5437:5432"
     env_file:
-     - ./.env
+     - ./backend/.env
 
 volumes:
   pgdata:
