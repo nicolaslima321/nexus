@@ -2,23 +2,26 @@ import { Injectable } from '@nestjs/common';
 import { CreateSurvivorDto } from './dto/create-survivor.dto';
 import { UpdateSurvivorDto } from './dto/update-survivor.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Survivor } from './entities/survivor.entity';
+import { Survivor } from '../entities/survivor.entity';
 import { Repository } from 'typeorm';
-import { Inventory } from './entities/inventory.entity';
+import { InventoryService } from 'src/inventory/inventory.service';
 
 @Injectable()
 export class SurvivorsService {
   constructor(
     @InjectRepository(Survivor)
     private readonly survivorRepository: Repository<Survivor>,
-    @InjectRepository(Inventory)
-    private readonly inventoryRepository: Repository<Inventory>,
+    private readonly inventoryService: InventoryService
   ) {}
 
   async create(createSurvivorDto: CreateSurvivorDto): Promise<Survivor> {
     const survivor = this.survivorRepository.create(createSurvivorDto);
 
-    return await this.survivorRepository.save(survivor);
+    await this.survivorRepository.save(survivor);
+
+    await this.inventoryService.initializeSurvivorInventory(survivor);
+
+    return survivor;
   }
 
   async findAll(): Promise<Survivor[]> {
@@ -42,10 +45,6 @@ export class SurvivorsService {
 
   async remove(id: number): Promise<void> {
     await this.survivorRepository.delete(id);
-  }
-
-  async exchangeItems() {
-    return {};
   }
 
   async generateReports() {

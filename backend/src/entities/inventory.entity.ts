@@ -11,6 +11,6 @@ export class Inventory {
   @JoinColumn()
   survivor: Survivor;
 
-  @OneToMany(() => InventoryItem, (inventoryItems) => inventoryItems)
+  @OneToMany(() => InventoryItem, (inventoryItem) => inventoryItem.inventory)
   inventoryItems: InventoryItem[];
 }

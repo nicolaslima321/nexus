@@ -32,6 +32,11 @@ export class SurvivorsController {
     return this.survivorsService.remove(+id);
   }
 
+  @Post('exchange')
+  exchangeInventory() {
+    return {};
+  }
+
   @Get('reports')
   getReportsOfSurvivors() {
     return {};

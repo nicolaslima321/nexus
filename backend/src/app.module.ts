@@ -6,10 +6,11 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { SurvivorsModule } from './survivors/survivors.module';
 
-import { Survivor } from './survivors/entities/survivor.entity';
-import { Inventory } from './survivors/entities/inventory.entity';
-import { Item } from './survivors/entities/item.entity';
+import { Survivor } from './entities/survivor.entity';
+import { Inventory } from './entities/inventory.entity';
+import { Item } from './entities/item.entity';
 import { SeedModule } from './utils/seed.module';
+import { InventoryItem } from './entities/inventory-item.entity';
 
 const databaseConnectionProps = {
   host: process?.env?.POSTGRES_HOST,
@@ -25,7 +26,7 @@ const databaseConnectionProps = {
     TypeOrmModule.forRoot({
       ...databaseConnectionProps,
       type: 'postgres',
-      entities: [Survivor, Inventory, Item],
+      entities: [Survivor, Inventory, InventoryItem, Item],
       synchronize: true,
     }),
     SeedModule,

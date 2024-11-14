@@ -10,7 +10,7 @@ export class InventoryItem {
   @Column('int', { default: 0 })
   quantity: number;
 
-  @ManyToOne(() => Inventory, inventory => inventory.items)
+  @ManyToOne(() => Inventory, inventory => inventory.inventoryItems)
   inventory: Inventory;
 
   @ManyToOne(() => Item)
