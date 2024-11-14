@@ -2,42 +2,65 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { SurvivorsService } from './survivors.service';
 import { CreateSurvivorDto } from './dto/create-survivor.dto';
 import { UpdateSurvivorDto } from './dto/update-survivor.dto';
+import { ExchangeDto } from 'src/inventory/dto/exchange.dto';
+import { InventoryService } from 'src/inventory/inventory.service';
 
 @Controller('survivors')
 export class SurvivorsController {
-  constructor(private readonly survivorsService: SurvivorsService) {}
+  constructor(
+    private readonly survivorService: SurvivorsService,
+    private readonly inventoryService: InventoryService
+  ) {}
 
   @Post()
   createSurvivor(@Body() createSurvivorDto: CreateSurvivorDto) {
-    return this.survivorsService.create(createSurvivorDto);
+    return this.survivorService.create(createSurvivorDto);
   }
 
   @Get()
   getAllSurvivors() {
-    return this.survivorsService.findAll();
+    return this.survivorService.findAll();
   }
 
   @Get(':id')
   findSurvivorById(@Param('id') id: string) {
-    return this.survivorsService.findOne(+id);
+    return this.survivorService.findOne(+id);
   }
 
   @Patch(':id')
   updateSurvivor(@Param('id') id: string, @Body() updateSurvivorDto: UpdateSurvivorDto) {
-    return this.survivorsService.update(+id, updateSurvivorDto);
+    return this.survivorService.update(+id, updateSurvivorDto);
   }
 
   @Delete(':id')
   removeSurvivor(@Param('id') id: string) {
-    return this.survivorsService.remove(+id);
+    return this.survivorService.remove(+id);
   }
 
-  @Post('exchange')
-  exchangeInventory() {
-    return {};
+  @Post('/exchange')
+  async exchangeInventory(@Body() exchangeDto: ExchangeDto) {
+    console.log('exchangeDto');
+    console.log(exchangeDto);
+
+    const { survivorId, targetSurvivorId, itemsToExchange } = exchangeDto;
+
+    const survivor = await this.survivorService.findWithInventory(survivorId);
+    const targetSurvivor = await this.survivorService.findWithInventory(targetSurvivorId);
+
+    const exchangeReport = await this.inventoryService.exchangeSurvivorItems(survivor, targetSurvivor, itemsToExchange);
+
+    console.log('survivor');
+    console.log(survivor);
+    console.log('targetSurvivor');
+    console.log(targetSurvivor);
+
+    console.log('exchangeReport');
+    console.log(exchangeReport);
+
+    return exchangeReport;
   }
 
-  @Get('reports')
+  @Get('/reports')
   getReportsOfSurvivors() {
     return {};
   }

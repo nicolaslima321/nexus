@@ -7,6 +7,7 @@ import { Item } from 'src/entities/item.entity';
 import { ItemDto } from './dto/item.dto';
 import { InventoryItem } from 'src/entities/inventory-item.entity';
 import { ExchangeDto } from './dto/exchange.dto';
+import { SurvivorsService } from 'src/survivors/survivors.service';
 
 @Injectable()
 export class InventoryService {
@@ -19,6 +20,7 @@ export class InventoryService {
     private readonly itemRepository: Repository<Item>,
     @InjectRepository(Survivor)
     private readonly survivorRepository: Repository<Survivor>,
+    private readonly survivorService: SurvivorsService
   ) {}
 
   async initializeSurvivorInventory(survivor: Survivor) {
@@ -34,7 +36,7 @@ export class InventoryService {
   }
 
   async addItemOnSurvivorInventory(item: ItemDto, survivorId: number) {
-    const survivor = await this.findSurvivorWithInventory(survivorId);
+    const survivor = await this.survivorService.findWithInventory(survivorId);
 
     const { itemId } = item;
 
@@ -50,28 +52,12 @@ export class InventoryService {
     }
   }
 
-  async exchangeSurvivorItems(exchangeDto: ExchangeDto) {
-    const { survivorId, targetSurvivorId, itemsToExchange } = exchangeDto;
-
-    const survivor = await this.findSurvivorWithInventory(survivorId);
-    const targetSurvivor = await this.findSurvivorWithInventory(targetSurvivorId);
-
+  async exchangeSurvivorItems(survivor: Survivor, targetSurvivor: Survivor, itemsToExchange: ItemDto[]) {
     await this.validateExchangeItems(survivor.inventory, itemsToExchange);
 
-    await this.performExchange(survivor.inventory, targetSurvivor.inventory, itemsToExchange);
-  }
+    const exchangeReport = await this.performExchange(survivor.inventory, targetSurvivor.inventory, itemsToExchange);
 
-  private async findSurvivorWithInventory(survivorId: number) {
-    const survivor = await this.survivorRepository.findOne({
-      where: { id: survivorId },
-      relations: ['inventory', 'inventory.inventoryItems', 'inventory.inventoryItems.item'],
-    });
-
-    if (!survivor) {
-      throw new NotFoundException('Survivor does not exists!');
-    }
-
-    return survivor;
+    return exchangeReport;
   }
 
   private async validateExchangeItems(inventory: Inventory, itemsToExchange: ItemDto[]) {
@@ -95,24 +81,33 @@ export class InventoryService {
     }
   }
 
-  private async performExchange(inventory: Inventory, inventoryToReceive: Inventory, itemsToExchange: ItemDto[]) {
-    for (const exchangeItem of itemsToExchange) {
+  private async performExchange(inventory: Inventory, inventoryToReceive: Inventory, listOfItemsToExchange: ItemDto[]) {
+    const exchangedItemsReport = [];
+
+    for (const itemToExchange of listOfItemsToExchange) {
       const inventoryItemToRemove = inventory.inventoryItems.find(
-        (invItem) => invItem.item.id === exchangeItem.itemId,
+        (invItem) => invItem.item.id === itemToExchange.itemId,
       );
 
       const inventoryItemToReceive = inventoryToReceive.inventoryItems.find(
-        (invItem) => invItem.item.id === exchangeItem.itemId,
+        (invItem) => invItem.item.id === itemToExchange.itemId,
       );
 
       if (inventoryItemToRemove && inventoryItemToReceive) {
-        inventoryItemToRemove.quantity -= exchangeItem.quantity;
-        inventoryItemToReceive.quantity += exchangeItem.quantity;
+        inventoryItemToRemove.quantity -= itemToExchange.quantity;
+        inventoryItemToReceive.quantity += itemToExchange.quantity;
 
         await this.inventoryItemRepository.save(inventoryItemToRemove);
         await this.inventoryItemRepository.save(inventoryItemToReceive);
+
+        exchangedItemsReport.push({
+          item: itemToExchange.name,
+          quantity: itemToExchange.quantity,
+        })
       }
     }
+
+    return exchangedItemsReport;
   }
 
   private async itemExists(itemId: number) {

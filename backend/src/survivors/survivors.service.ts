@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateSurvivorDto } from './dto/create-survivor.dto';
 import { UpdateSurvivorDto } from './dto/update-survivor.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -30,6 +30,19 @@ export class SurvivorsService {
 
   async findOne(id: number): Promise<Survivor> {
     return await this.survivorRepository.findOneBy({ id });
+  }
+
+  async findWithInventory(survivorId: number) {
+    const survivor = await this.survivorRepository.findOne({
+      where: { id: survivorId },
+      relations: ['inventory', 'inventory.inventoryItems', 'inventory.inventoryItems.item'],
+    });
+
+    if (!survivor) {
+      throw new NotFoundException('Survivor does not exists!');
+    }
+
+    return survivor;
   }
 
   async update(id: number, updateSurvivorDto: UpdateSurvivorDto): Promise<void> {
