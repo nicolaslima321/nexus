@@ -1,6 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn, CreateDateColumn } from 'typeorm';
 import { Inventory } from './inventory.entity';
 import { genderEnum } from 'src/enums';
+import { Account } from './account.entity';
 
 @Entity()
 export class Survivor {
@@ -24,6 +25,10 @@ export class Survivor {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @OneToOne(() => Account, (account) => account.survivor)
+  @JoinColumn()
+  account: Account;
 
   @OneToOne(() => Inventory, (inventory) => inventory.survivor)
   @JoinColumn()
