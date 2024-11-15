@@ -3,6 +3,11 @@ import localFont from "next/font/local";
 import "./globals.css";
 import Header from "~/layouts/header/Header";
 
+/* This provider is only used to avoid hydratation and compatibility errors with nextjs
+ * ref: https://mui.com/material-ui/integrations/nextjs/#app-router
+ */
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
+
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -27,11 +32,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased max-w-full overflow-hidden`}
       >
-        <Header/>
+        <AppRouterCacheProvider>
+          <Header/>
 
-        {children}
+          {children}
+        </AppRouterCacheProvider>
       </body>
     </html>
   );

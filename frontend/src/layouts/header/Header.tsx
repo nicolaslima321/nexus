@@ -4,14 +4,22 @@ import NexusLogo from "./NexusLogo";
 
 export default function Header() {
   return (
-    <header style={{
-      backgroundColor: "#3E1F47"
-    }}>
-      <NexusLogo/>
+    <header
+      className="flex items-center justify-between bg-purple p-1 sm:py-2 sm:px-32"
+    >
+      <div className="w-[32] h-[32] flex items-center gap-6">
+        <NexusLogo/>
 
-      <NavigationActions />
+        <p className="invisible sm:visible sm:text-l">
+          Survival Nexus
+        </p>
+      </div>
+
+      <div className="hidden sm:flex sm:w-4/12 sm:justify-between sm:visible">
+        <NavigationActions />
+      </div>
 
       <AccountSection/>
     </header>
   )
-}
+}''
