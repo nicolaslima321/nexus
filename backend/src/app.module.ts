@@ -11,6 +11,7 @@ import { Inventory } from './entities/inventory.entity';
 import { Item } from './entities/item.entity';
 import { SeedModule } from './utils/seed.module';
 import { InventoryItem } from './entities/inventory-item.entity';
+import { Account } from './entities/account.entity';
 
 const databaseConnectionProps = {
   host: process?.env?.POSTGRES_HOST,
@@ -26,7 +27,7 @@ const databaseConnectionProps = {
     TypeOrmModule.forRoot({
       ...databaseConnectionProps,
       type: 'postgres',
-      entities: [Survivor, Inventory, InventoryItem, Item],
+      entities: [Account, Survivor, Inventory, InventoryItem, Item],
       synchronize: true,
     }),
     SeedModule,

@@ -15,7 +15,7 @@ export class Account {
   @Column({ default: true })
   firstAccess: boolean;
 
-  @OneToOne(() => Survivor, (account) => account.survivor)
+  @OneToOne(() => Survivor, (survivor) => survivor.account)
   @JoinColumn()
   survivor: Survivor;
 }
