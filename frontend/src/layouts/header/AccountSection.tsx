@@ -1,33 +1,15 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { Avatar, Drawer, Menu, Tooltip, MenuItem, IconButton, Divider } from '@mui/material';
 import { Badge } from '~/components';
 import { routes } from './links';
 import Link from 'next/link';
+import useTheme from '~/hooks/Theme';
 
 export default function AccountSection() {
-  const [theme, setTheme] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-    }
-    return 'light';
-  });
-
-  useEffect(() => {
-    const root = window.document.documentElement;
-    if (theme === 'dark') {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-    }
-    localStorage.setItem('theme', theme);
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
-  };
+  const { switchTheme } = useTheme();
 
   /** Mocked while the backend is not ready */
   const survivor = {
@@ -108,7 +90,7 @@ export default function AccountSection() {
 
           <Divider />
 
-          <MenuItem onClick={toggleTheme}><span className="text-md">Change theme</span></MenuItem>
+          <MenuItem onClick={switchTheme}><span className="text-md">Change theme</span></MenuItem>
 
           <Divider />
 
