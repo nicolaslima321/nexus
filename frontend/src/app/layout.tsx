@@ -32,12 +32,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased max-w-full overflow-hidden`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AppRouterCacheProvider>
           <Header/>
 
-          <div className="px-2 sm:px-32">
+          <div className="px-2 py-12 sm:px-32">
             {children}
           </div>
         </AppRouterCacheProvider>

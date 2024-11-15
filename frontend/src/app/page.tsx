@@ -1,17 +1,15 @@
-import { Badge } from "~/components";
-import Card from "~/components/common/Card";
 import Title from "~/components/common/Title";
 import ReportCard from "~/components/reports/ReportCard";
 
 export default function Home() {
   return (
-    <div>
-      <section>
+    <div className="flex flex-col items-center md:block">
+      <section className="mb-6">
         <Title variant="h4" text="Reports"/>
         <p className="text-black">Your camp has grown +5% this month</p>
       </section>
 
-      <section className="flex flex-col justify-between sm:flex-row">
+      <section className="flex flex-col items-center md:justify-between md:flex-row md:flex-wrap gap-6">
         {[1, 2, 3].map((index) => (
           <ReportCard
             key={index}

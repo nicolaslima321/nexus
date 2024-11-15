@@ -10,16 +10,16 @@ export default function Header() {
       <div className="w-[32] h-[32] flex items-center gap-6">
         <NexusLogo/>
 
-        <p className="invisible sm:visible sm:text-l">
+        <p className="invisible text-white sm:visible sm:text-l">
           Survival Nexus
         </p>
       </div>
 
-      <div className="hidden sm:flex sm:w-4/12 sm:justify-between sm:visible">
+      <div className="hidden text-white md:flex md:w-4/12 md:justify-between">
         <NavigationActions />
       </div>
 
       <AccountSection/>
     </header>
   )
-}''
+}

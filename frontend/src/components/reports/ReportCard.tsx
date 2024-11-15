@@ -1,7 +1,6 @@
 import Badge from "../common/Badge";
 import Card from "../common/Card";
 import Title from "../common/Title";
-import { Divider } from'@mui/material';
 
 interface IReportCard {
   title: string,
@@ -11,31 +10,35 @@ interface IReportCard {
   key?: string | number;
 }
 
-export default function ReportCard({ title, result, subTitle, balance, key }: IReportCard) {
+export default function ReportCard({ title, result, subTitle, balance, ...rest }: IReportCard) {
   const hasPositiveBalance = balance && balance > 0;
 
   return (
-    <Card key={key}>
-      <>
-        <Title variant="h6" text={title} />
+    <Card {...rest}>
+      <div className="max-w-[260px] w-screen md:max-w-[340px] md:w-[340px]">
+        <div className="p-3 sm:p-4">
+          <Title variant="h6" text={title} />
 
-        <div className="flex items-center gap-2">
-          <Title variant="h3" text={result} />
+          <div className="flex items-center mt-4 gap-2">
+            <Title variant="h3" text={result} />
 
-          {Boolean(balance) &&
-            <Badge
-              text={`${hasPositiveBalance ? '+' : '-' } ${balance}`}
-              color={hasPositiveBalance ? 'green' : 'red'}
-            />
-          }
+            {Boolean(balance) &&
+              <Badge
+                text={`${hasPositiveBalance ? '+' : '-' } ${balance}`}
+                color={hasPositiveBalance ? 'green' : 'red'}
+              />
+            }
+          </div>
+
+          <p className="font-xs text-black font-thin">{subTitle}</p>
         </div>
 
-        <p className="font-xs text-black font-thin">{subTitle}</p>
+        <hr className="static left-0" />
 
-        <hr />
-
-        Download report
-      </>
+        <div className="p-3 sm:p-4">
+          Download report
+        </div>
+      </div>
     </Card>
   );
 }
