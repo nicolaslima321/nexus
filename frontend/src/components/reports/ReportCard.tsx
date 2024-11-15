@@ -30,12 +30,12 @@ export default function ReportCard({ title, result, subTitle, balance, ...rest }
             }
           </div>
 
-          <p className="font-xs text-black font-thin">{subTitle}</p>
+          <p className="font-xs text-black font-thin text-gray-700 dark:text-gray-400">{subTitle}</p>
         </div>
 
-        <hr className="static left-0" />
+        <hr className="dark:border-gray-700" />
 
-        <div className="p-3 sm:p-4">
+        <div className="p-3 sm:p-4 text-gray-700 dark:text-gray-400">
           Download report
         </div>
       </div>

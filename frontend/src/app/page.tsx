@@ -6,7 +6,7 @@ export default function Home() {
     <div className="flex flex-col items-center md:block">
       <section className="mb-6">
         <Title variant="h4" text="Reports"/>
-        <p className="text-black">Your camp has grown +5% this month</p>
+        <p className="text-gray-700 dark:text-gray-400">Your camp has grown +5% this month</p>
       </section>
 
       <section className="flex flex-col items-center md:justify-between md:flex-row md:flex-wrap gap-6">
