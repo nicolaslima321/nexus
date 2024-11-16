@@ -11,10 +11,18 @@ import { InventoryRepository } from '../entities/inventory.repository';
 import { InventoryService } from 'src/inventory/inventory.service';
 import { InventoryItem } from 'src/entities/inventory-item.entity';
 import { InventoryItemRepository } from 'src/entities/inventory-item.repository';
+import { AccountService } from 'src/account/account.service';
+import { Account } from 'src/entities/account.entity';
+import { AccountRepository } from 'src/entities/account.repository';
+import { AuthController } from 'src/auth/auth.controller';
+import { AuthService } from 'src/auth/auth.service';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
+      Account,
+      AccountRepository,
       Survivor,
       SurvivorRepository,
       Item,
@@ -24,8 +32,13 @@ import { InventoryItemRepository } from 'src/entities/inventory-item.repository'
       InventoryItem,
       InventoryItemRepository,
     ]),
+    JwtModule.register({
+      global: true,
+      secret: process?.env?.API_JWT_SECRET,
+      signOptions: { expiresIn: '3600s' },
+    }),
   ],
-  controllers: [SurvivorsController],
-  providers: [SurvivorsService, InventoryService],
+  controllers: [AuthController, SurvivorsController],
+  providers: [AuthService, AccountService, SurvivorsService, InventoryService],
 })
 export class SurvivorsModule {}

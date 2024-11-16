@@ -1,21 +1,26 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
+import { cookies } from 'next/headers'
 
-export default class HttpService {
+class HttpService {
   private api;
 
   constructor() {
-    const baseURL = process.env.baseURL;
+    const baseURL = 'http://backend:3000/';
 
     this.api = axios.create({
       baseURL,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      withCredentials: true,
     });
 
     this.api.interceptors.request.use(
-      (config) => {
+      async (config) => {
 
-        const token = this.getJwtFromCookies();
+        const token = await this.getJwt();
         if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
+          config.headers.Authorization = `Bearer ${token.value}`;
         }
 
         const apiKey = this.getApiKey();
@@ -31,46 +36,45 @@ export default class HttpService {
     );
   }
 
-  getJwtFromCookies() {
-    return document.cookie
-      .split('; ')
-      .find((row) => row.startsWith('jwt='))
-      ?.split('=')[1];
+  async getJwt() {
+    const cookieStore = await cookies();
+
+    return cookieStore.get('accessToken');
   }
 
 
   getApiKey() {
-    return process.env.REACT_APP_API_KEY || 'sua-api-key-aqui';
+    return process.env.API_KEY;
   }
 
-  async post(url, data, config = {}) {
+  async post(url: string, data: object, config = {}) {
     try {
       const response = await this.api.post(url, data, config);
       return response.data;
     } catch (error) {
-      this.handleError(error);
+      this.handleError(error as AxiosError);
     }
   }
 
-  async patch(url, data, config = {}) {
+  async patch(url: string, data: object, config = {}) {
     try {
       const response = await this.api.patch(url, data, config);
       return response.data;
     } catch (error) {
-      this.handleError(error);
+      this.handleError(error as AxiosError);
     }
   }
 
-  async get(url, config = {}) {
+  async get(url: string, config = {}) {
     try {
       const response = await this.api.get(url, config);
       return response.data;
     } catch (error) {
-      this.handleError(error);
+      this.handleError(error as AxiosError);
     }
   }
 
-  handleError(error) {
+  handleError(error: AxiosError) {
     if (error.response) {
       console.error('Response Error:', error.response.data);
     } else if (error.request) {
@@ -81,3 +85,7 @@ export default class HttpService {
     throw error;
   }
 }
+
+const httpService = new HttpService();
+
+export default httpService;

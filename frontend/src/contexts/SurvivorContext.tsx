@@ -34,6 +34,8 @@ export const SurvivorAuthProvider = ({ children }: ISurvivorAuthProvider) => {
     if (storedUser && storedAuth === 'true') {
       setUser(JSON.parse(storedUser));
       setIsAuthenticated(true);
+    } else {
+      logout();
     }
   }, []);
 
@@ -52,7 +54,10 @@ export const SurvivorAuthProvider = ({ children }: ISurvivorAuthProvider) => {
     localStorage.removeItem('user');
     localStorage.removeItem('isAuthenticated');
 
-    router.push('/login');
+    const currentPath = window.location.pathname;
+    const itsOnLoginPage = ['/login', '/signup'].includes(currentPath);
+
+    if (!itsOnLoginPage) router.push('/login');
   };
 
   return (
