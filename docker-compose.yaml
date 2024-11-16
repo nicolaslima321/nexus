@@ -10,9 +10,13 @@ services:
       - /app/node_modules
       - /app/.next
     ports:
-      - "8080:3000"
+      - "8080:8080"
+    networks:
+      - nexus_network
+    env_file:
+    - ./frontend/.env
     expose:
-      - "3000"
+      - "8080"
     command: "yarn dev"
     depends_on:
       - backend
@@ -27,6 +31,8 @@ services:
       - /app/node_modules
     ports:
       - "3000:3000"
+    networks:
+      - nexus_network
     expose:
       - "3000"
     command: "yarn start"
@@ -40,8 +46,14 @@ services:
         - pgdata:/var/lib/postgresql/data
     ports:
      - "5437:5432"
+    networks:
+      - nexus_network
     env_file:
      - ./backend/.env
+
+networks:
+  nexus_network:
+    driver: bridge
 
 volumes:
   pgdata:
