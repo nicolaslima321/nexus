@@ -1,14 +1,18 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { createSurvivor } from "~/apis/survivor-api";
 import Button from "~/components/common/Button";
 import Card from "~/components/common/Card";
 import SelectInput from "~/components/common/SelectInput";
 import TextInput from "~/components/common/TextInput";
+import { useNotification } from "~/contexts/NotificationContext";
 import { ISurvivor } from "~/interfaces";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const { notify } = useNotification();
+
   const [survivor, setSurvivor] = useState<ISurvivor>({
     age: 0,
     fullName: '',
@@ -56,7 +60,28 @@ export default function LoginPage() {
   const handleSignup = async () => {
     setIsCreatingSurvivor(true);
 
-    await createSurvivor(survivor);
+    try {
+      const authResult = await fetch('/api/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(survivor),
+      });
+
+      if (authResult.status === 200) {
+        notify('success', 'You have successfully sign up!');
+
+        router.push('/');
+      } else {
+        notify('error', 'Failed to create account');
+      }
+    } catch (err) {
+      console.error('err');
+      console.error(err);
+
+      notify('error', 'An error occurred while trying to create your account');
+    }
 
     setIsCreatingSurvivor(false);
   };
