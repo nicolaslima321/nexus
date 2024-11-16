@@ -5,6 +5,7 @@ export default function useTheme() {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     }
+
     return 'light';
   });
 

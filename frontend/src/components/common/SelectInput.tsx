@@ -1,14 +1,13 @@
 interface ISelectInput {
   id: string;
   name: string;
-  placeholder: string;
   type: string;
   options: { label: string | number, value: string | number }[]
   value: string | number;
   onChange: () => void;
 };
 
-export default function SelectInput({ id, name, placeholder, onChange, options, value }: ISelectInput) {
+export default function SelectInput({ id, name, onChange, options, value }: ISelectInput) {
   return (
     <div>
       <label htmlFor={id} className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{name}</label>
@@ -18,7 +17,6 @@ export default function SelectInput({ id, name, placeholder, onChange, options, 
         onChange={onChange}
         value={value}
       >
-        <option selected>{placeholder}</option>
         {options.map(({ label, value }) => <option key={label} value={value}>{label}</option>)}
       </select>
     </div>
