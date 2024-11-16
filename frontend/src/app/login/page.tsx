@@ -1,18 +1,49 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Button from "~/components/common/Button";
 import Card from "~/components/common/Card";
 import TextInput from "~/components/common/TextInput";
+import { useNotification } from "~/contexts/NotificationContext";
 
 export default function LoginPage() {
+  const { notify } = useNotification();
+
+  const router = useRouter();
+
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = () => {
-    console.log(login);
-    console.log(password);
+  const handleLogin = async () => {
+    setIsLoading(true);
+
+    try {
+      const authResult = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ login, password }),
+      });
+
+      if ([404, 401].includes(authResult.status)) {
+        notify('error', 'Login or password is invalid');
+      } else if (authResult.status === 200) {
+        notify('success', 'You have successfully logged in');
+
+        router.push('/');
+      }
+    } catch (err) {
+      console.error('err');
+      console.error(err);
+
+      notify('error', 'An error occurred while trying to login');
+    }
+
+    setIsLoading(false);
   };
 
   return (
@@ -24,7 +55,7 @@ export default function LoginPage() {
 
             <TextInput
               id="login"
-              name="login"
+              name="Login"
               placeholder="Enter your login"
               value={login}
               onChange={(e) => setLogin(e.target.value)}
@@ -32,7 +63,7 @@ export default function LoginPage() {
 
             <TextInput
               id="password"
-              name="password"
+              name="Password"
               type="password"
               placeholder="Enter your password"
               value={password}
@@ -44,6 +75,7 @@ export default function LoginPage() {
             <Button
               className="w-full"
               text="Sign In"
+              isLoading={isLoading}
               onClick={handleLogin}
               disabled={!login || !password}
             />
