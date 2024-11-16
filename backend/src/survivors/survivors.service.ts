@@ -5,13 +5,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Survivor } from '../entities/survivor.entity';
 import { Repository } from 'typeorm';
 import { InventoryService } from 'src/inventory/inventory.service';
+import { AccountService } from 'src/account/account.service';
 
 @Injectable()
 export class SurvivorsService {
   constructor(
     @InjectRepository(Survivor)
     private readonly survivorRepository: Repository<Survivor>,
-    private readonly inventoryService: InventoryService
+    private readonly inventoryService: InventoryService,
+    private readonly accountService: AccountService
   ) {}
 
   async create(createSurvivorDto: CreateSurvivorDto): Promise<Survivor> {
@@ -20,6 +22,7 @@ export class SurvivorsService {
     await this.survivorRepository.save(survivor);
 
     await this.inventoryService.initializeSurvivorInventory(survivor);
+    await this.accountService.initializeSurvivorAccount(survivor);
 
     return survivor;
   }
