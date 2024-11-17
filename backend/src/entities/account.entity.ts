@@ -1,19 +1,19 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToOne, JoinColumn, PrimaryColumn } from 'typeorm';
+import { Entity, Column, Generated, OneToOne, JoinColumn, PrimaryColumn } from 'typeorm';
 import { Survivor } from './survivor.entity';
+import { IsEmail } from "class-validator";
 
 @Entity()
 export class Account {
-  @PrimaryGeneratedColumn()
+  @Column()
+  @Generated('increment')
   id: number;
 
   @PrimaryColumn()
-  login: string;
+  @IsEmail()
+  email: string;
 
   @Column()
   password: string;
-
-  @Column({ default: true })
-  firstAccess: boolean;
 
   @OneToOne(() => Survivor, (survivor) => survivor.account)
   @JoinColumn()

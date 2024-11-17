@@ -1,49 +1,64 @@
-import { Injectable } from '@nestjs/common';
+import { Logger, InternalServerErrorException, BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Survivor } from 'src/entities/survivor.entity';
 import { Account } from 'src/entities/account.entity';
 
 import * as bcrypt from 'bcrypt';
+import { CreateSurvivorDto } from 'src/survivors/dto/create-survivor.dto';
+import { AuthService } from 'src/auth/auth.service';
+import { QueryRunner } from 'typeorm';
 
 @Injectable()
 export class AccountService {
+  private readonly logger = new Logger(AccountService.name);
+
   constructor(
     @InjectRepository(Account)
     private readonly accountRepository: Repository<Account>,
+    private readonly authService: AuthService,
   ) {}
 
-  async initializeSurvivorAccount(survivor: Survivor) {
-    const login = this.generateAccountLogin(survivor);
+  async initializeSurvivorAccount(queryRunner: QueryRunner, survivor: Survivor, accountData: CreateSurvivorDto) {
+    this.logger.log(`initializeSurvivorAccount: Initializing account for survivor #${survivor.id}...`);
 
+    const { email, password, passwordConfirmation } = accountData;
+
+    if (password !== passwordConfirmation) {
+      this.logger.error(`initializeSurvivorAccount: Passwords provided does not match!`);
+
+      throw new BadRequestException('Passwords provided does not match');
+    }
+
+    this.logger.log(`initializeSurvivorAccount: Hashing password...`);
     const saltOrRounds = 10;
-
-    /**
-     * Password is the login for the first access
-     */
-    const password = login;
 
     const hash = await bcrypt.hash(password, saltOrRounds);
 
     const account = this.accountRepository.create({
-      login,
+      email,
       password: hash,
-      firstAccess: true,
       survivor,
     });
 
-    await this.accountRepository.save(account);
-  }
+    this.logger.log(`initializeSurvivorAccount: debug account: ${JSON.stringify(account)}`);
+    this.logger.log(`initializeSurvivorAccount: debug survivor: ${JSON.stringify(survivor)}`);
 
-  private generateAccountLogin(survivor: Survivor) {
-    const splittedName = survivor.name.split(' ');
-    const lastName = splittedName[splittedName.length - 1];
+    const createdAccount = await queryRunner.manager.save(Account, account);
+    this.logger.log(`initializeSurvivorAccount: Account for survivor #${survivor.id} created!`);
 
-    /**
-     * Login is based on the first letter of the name, and the last name of the survivor
-     */
-    const login = `${splittedName[0].charAt(0)}${lastName}${survivor.id}`;
+    survivor.account = createdAccount;
+    await queryRunner.manager.save(Survivor, survivor);
 
-    return login;
+    this.logger.log(`initializeSurvivorAccount: Generating access token...`);
+
+    const accessToken = await this.authService.generateJwtToken(createdAccount);
+
+    this.logger.log(`initializeSurvivorAccount: Retrieving access token...`);
+
+    return {
+      account: createdAccount,
+      accessToken,
+    };
   }
 }

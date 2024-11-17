@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Logger, Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { SurvivorsService } from './survivors.service';
 import { CreateSurvivorDto } from './dto/create-survivor.dto';
 import { UpdateSurvivorDto } from './dto/update-survivor.dto';
@@ -8,14 +8,25 @@ import { ItemDto } from 'src/inventory/dto/item.dto';
 
 @Controller('survivors')
 export class SurvivorsController {
+  private readonly logger = new Logger(SurvivorsController.name);
+
   constructor(
     private readonly survivorService: SurvivorsService,
-    private readonly inventoryService: InventoryService
+    private readonly inventoryService: InventoryService,
   ) {}
 
   @Post()
-  createSurvivor(@Body() createSurvivorDto: CreateSurvivorDto) {
-    return this.survivorService.create(createSurvivorDto);
+  async createSurvivor(@Body() createSurvivorDto: CreateSurvivorDto) {
+    this.logger.log('createSurvivor: starting survivor creation..');
+
+    const { accessToken, survivor } = await this.survivorService.create(createSurvivorDto);
+
+    this.logger.log(`createSurvivor: survivor #${survivor.id} and it's account were successfully created!`);
+
+    return {
+      message: 'Survivor successfully created!',
+      accessToken,
+    };
   }
 
   @Get()
