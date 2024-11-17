@@ -5,8 +5,10 @@ import AccountSection from "./AccountSection";
 import NavigationActions from "./NavigationActions";
 import NexusLogo from "./NexusLogo";
 import useTheme from "~/hooks/Theme";
+import { useAppContext } from "~/contexts/AppContext";
 
 export default function Header() {
+  const { appIsLoading } = useAppContext();
   const { isAuthenticated } = useAuth();
   const { switchTheme, theme } = useTheme();
 
@@ -24,7 +26,7 @@ export default function Header() {
 
   return (
     <header
-      className="flex items-center justify-between bg-purple px-4 py-1 sm:py-2 sm:px-32"
+      className="flex items-center justify-between bg-purple h-20 px-4 sm:px-32"
     >
       <div className="w-[32] h-[32] flex items-center gap-6">
         <NexusLogo/>
@@ -34,12 +36,12 @@ export default function Header() {
         </p>
       </div>
 
-      {isAuthenticated && <div className="hidden text-white md:flex md:w-4/12 md:justify-between">
+      {Boolean(isAuthenticated && !appIsLoading) && <div className="hidden text-white md:flex md:w-4/12 md:justify-between">
         <NavigationActions />
       </div>}
 
       {
-        isAuthenticated ? <AccountSection/> : <button onClick={switchTheme}>
+        Boolean(isAuthenticated && !appIsLoading) ? <AccountSection/> : <button onClick={switchTheme}>
           {theme === 'light' ? DarkIcon : LightIcon}
         </button>
       }

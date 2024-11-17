@@ -10,6 +10,8 @@ import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import { SurvivorAuthProvider } from "~/contexts/SurvivorContext";
 import Toast from "~/components/common/Toast";
 import { NotificationProvider } from "~/contexts/NotificationContext";
+import { AppProvider } from "~/contexts/AppContext";
+import Template from "./template";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -37,18 +39,20 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <SurvivorAuthProvider>
-          <NotificationProvider>
-            <AppRouterCacheProvider>
-              <Header/>
-              <Toast />
+        <AppProvider>
+          <SurvivorAuthProvider>
+            <NotificationProvider>
+              <AppRouterCacheProvider>
+                <Header/>
+                <Toast />
 
-              <div className="px-2 py-12 sm:px-32">
-                {children}
-              </div>
-            </AppRouterCacheProvider>
-          </NotificationProvider>
-        </SurvivorAuthProvider>
+                <Template>
+                  {children}
+                </Template>
+              </AppRouterCacheProvider>
+            </NotificationProvider>
+          </SurvivorAuthProvider>
+        </AppProvider>
       </body>
     </html>
   );
