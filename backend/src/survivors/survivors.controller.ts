@@ -1,10 +1,11 @@
-import { Logger, Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Logger, Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { SurvivorsService } from './survivors.service';
 import { CreateSurvivorDto } from './dto/create-survivor.dto';
 import { UpdateSurvivorDto } from './dto/update-survivor.dto';
 import { ExchangeDto } from 'src/inventory/dto/exchange.dto';
 import { InventoryService } from 'src/inventory/inventory.service';
 import { ItemDto } from 'src/inventory/dto/item.dto';
+import { NexusAuthGuard } from 'src/auth/auth.guard';
 
 @Controller('survivors')
 export class SurvivorsController {
@@ -31,11 +32,13 @@ export class SurvivorsController {
   }
 
   @Get()
-  getAllSurvivors() {
-    return this.survivorService.findAll();
+  @UseGuards(NexusAuthGuard)
+  async getAllSurvivors() {
+    return await this.survivorService.findAll();
   }
 
   @Get(':id')
+  @UseGuards(NexusAuthGuard)
   async findSurvivorById(@Param('id') id: string) {
     this.logger.log(`findSurvivorById: searching for survivor #${id}`);
 
@@ -50,8 +53,9 @@ export class SurvivorsController {
   }
 
   @Patch(':id')
-  updateSurvivor(@Param('id') id: string, @Body() updateSurvivorDto: UpdateSurvivorDto) {
-    return this.survivorService.update(+id, updateSurvivorDto);
+  @UseGuards(NexusAuthGuard)
+  async updateSurvivor(@Param('id') id: string, @Body() updateSurvivorDto: UpdateSurvivorDto) {
+    return await this.survivorService.update(+id, updateSurvivorDto);
   }
 
   @Delete(':id')
@@ -60,6 +64,7 @@ export class SurvivorsController {
   }
 
   @Post('/:id/inventory/add')
+  @UseGuards(NexusAuthGuard)
   async addOnInventory(@Param('id') id: string, @Body() addedItemsDto: ItemDto[]) {
     const survivor = await this.survivorService.findWithInventory(+id);
 
@@ -73,6 +78,7 @@ export class SurvivorsController {
   }
 
   @Post('/inventory/exchange')
+  @UseGuards(NexusAuthGuard)
   async exchangeInventory(@Body() exchangeDto: ExchangeDto) {
     console.log('exchangeDto');
     console.log(exchangeDto);
@@ -96,7 +102,8 @@ export class SurvivorsController {
   }
 
   @Get('/reports')
-  getReportsOfSurvivors() {
+  @UseGuards(NexusAuthGuard)
+  async getReportsOfSurvivors() {
     return {};
   }
 }

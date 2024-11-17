@@ -5,7 +5,7 @@ class HttpService {
   private api;
 
   constructor() {
-    const baseURL = 'http://backend:3000/';
+    const baseURL = process.env.NEXT_PUBLIC_API_URL;
 
     this.api = axios.create({
       baseURL,

@@ -4,6 +4,7 @@ import React, { createContext, useCallback, useContext, useState, useEffect } fr
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { ISurvivor } from '~/interfaces';
+import { useAppContext } from './AppContext';
 
 interface AuthContextType {
   storedSurvivor: ISurvivor | null;
@@ -22,7 +23,15 @@ interface ISurvivorAuthProvider {
 export const SurvivorAuthProvider = ({ children }: ISurvivorAuthProvider) => {
   const [storedSurvivor, setStoredSurvivor] = useState<ISurvivor | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+
+  const { setAppIsLoading } = useAppContext();
   const router = useRouter();
+
+  const itsOnPagesWithoutAuth = () => {
+    const currentPath = window.location.pathname;
+
+    return ['/login', '/signup'].includes(currentPath);
+  };
 
   const fetchSurvivor = useCallback(async () => {
     const isSurvivorAuthenticated = Boolean(
@@ -39,14 +48,26 @@ export const SurvivorAuthProvider = ({ children }: ISurvivorAuthProvider) => {
   }, [isAuthenticated]);
 
   useEffect(() => {
+    if (!itsOnPagesWithoutAuth()) setAppIsLoading(true);
+    else setAppIsLoading(false);
+
     fetchSurvivor();
   }, [isAuthenticated]);
 
   const checkForSurvivor = async (id: string | number) => {
-    const { status, data: survivor } = await axios.get(`/api/survivor/${id}`);
+    try {
+      const { status, data: survivor } = await axios.get(`/api/survivor/${id}`);
 
-    if (status === 200) storeSurvivor(survivor);
-    else logout();
+      if (status === 200) {
+        storeSurvivor(survivor)
+
+        if (itsOnPagesWithoutAuth()) router.push('/');
+      } else logout();
+    } catch (error) {
+      console.error('Failed to perform survivor fetch', error);
+
+      logout();
+    }
   };
 
   const storeOnLocalStorage = (survivorId: string) => {
@@ -60,6 +81,8 @@ export const SurvivorAuthProvider = ({ children }: ISurvivorAuthProvider) => {
     setStoredSurvivor(survivor);
 
     storeOnLocalStorage(survivor.id.toString());
+
+    setAppIsLoading(false);
   };
 
   const logout = () => {
@@ -69,10 +92,9 @@ export const SurvivorAuthProvider = ({ children }: ISurvivorAuthProvider) => {
     localStorage.removeItem('survivorId');
     localStorage.removeItem('isAuthenticated');
 
-    const currentPath = window.location.pathname;
-    const itsOnLoginPage = ['/login', '/signup'].includes(currentPath);
+    setAppIsLoading(false);
 
-    if (!itsOnLoginPage) router.push('/login');
+    if (!itsOnPagesWithoutAuth()) router.push('/login');
   };
 
   return (
