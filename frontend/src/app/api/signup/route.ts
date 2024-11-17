@@ -4,6 +4,9 @@ export async function POST(request: Request) {
   try {
     const survivorData = await request.json();
 
+    console.log('survivorData');
+    console.log(survivorData);
+
     const creationPayload = await performCreation(survivorData);
 
     // const cookieStore = await cookies()
