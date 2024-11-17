@@ -26,6 +26,7 @@ export class SurvivorsController {
     return {
       message: 'Survivor successfully created!',
       accessToken,
+      survivor,
     };
   }
 
@@ -35,8 +36,17 @@ export class SurvivorsController {
   }
 
   @Get(':id')
-  findSurvivorById(@Param('id') id: string) {
-    return this.survivorService.findOne(+id);
+  async findSurvivorById(@Param('id') id: string) {
+    this.logger.log(`findSurvivorById: searching for survivor #${id}`);
+
+    const survivorFound = await this.survivorService.findOne(+id);
+
+    if (!survivorFound)
+      this.logger.error(`findSurvivorById: survivor #${id} not found!`);
+    else
+      this.logger.log(`findSurvivorById: survivor #${id} found!`);
+
+    return survivorFound;
   }
 
   @Patch(':id')

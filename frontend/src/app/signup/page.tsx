@@ -5,13 +5,17 @@ import { useState } from "react";
 import Button from "~/components/common/Button";
 import Card from "~/components/common/Card";
 import { useNotification } from "~/contexts/NotificationContext";
+import { useAuth } from "~/contexts/SurvivorContext";
 import { ISurvivor } from "~/interfaces";
 import { IAccount } from "~/interfaces/account";
 import SignupFirstStep from "~/page-components/signup/FirstStep";
 import SignupSecondStep from "~/page-components/signup/SecondStep";
+import { isEmailValid } from "~/utils";
+import axios from 'axios';
 
 export default function SignupPage() {
   const router = useRouter();
+  const { storeSurvivor } = useAuth();
   const { notify } = useNotification();
 
   const [step, setStep] = useState(1);
@@ -69,18 +73,16 @@ export default function SignupPage() {
         },
       };
 
-      const authResult = await fetch('/api/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(survivorData),
-      });
+      const { status, data } = await axios.post('/api/signup', survivorData);
 
-      if (authResult.status === 200) {
+      if (status === 200) {
         notify('success', 'You have successfully sign up!');
 
-        // router.push('/');
+        storeSurvivor(data.survivor);
+
+        router.push('/');
+      } else if (status === 422) {
+        notify('error', 'E-mail already in use!');
       } else {
         notify('error', 'Failed to create account');
       }
@@ -95,8 +97,9 @@ export default function SignupPage() {
 
   const mustDisableButton = (targetObject: ISurvivor | IAccount) => {
     const hasPasswordWrong = account.password !== account.passwordConfirmation;
+    const hasInvalidEmail = !isEmailValid(account.email);
 
-    if (step === 2 && hasPasswordWrong) return true;
+    if (step === 2 && (hasPasswordWrong || hasInvalidEmail)) return true;
 
     return Object.entries(targetObject).some(([key, value]) => {
       if (key === 'isInfected') {

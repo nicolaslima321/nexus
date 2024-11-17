@@ -2,6 +2,7 @@
 
 import TextInput from "~/components/common/TextInput";
 import { IAccount } from "~/interfaces/account";
+import { isEmailValid } from "~/utils";
 
 interface ISignupSecondStep {
   account: IAccount;
@@ -9,7 +10,6 @@ interface ISignupSecondStep {
 }
 
 export default function SignupSecondStep({ account, onUpdateAccount }: ISignupSecondStep) {
-
   return (
     <>
       <TextInput
@@ -17,6 +17,8 @@ export default function SignupSecondStep({ account, onUpdateAccount }: ISignupSe
         name="E-mail"
         placeholder="Enter your e-mail"
         type="email"
+        hasError={Boolean(account.email && !isEmailValid(account.email))}
+        errorText="Must be a valid e-mail"
         value={account.email}
         onChange={(e) => onUpdateAccount('email', e.target.value)}
       />

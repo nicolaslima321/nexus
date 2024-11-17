@@ -7,13 +7,17 @@ import Button from "~/components/common/Button";
 import Card from "~/components/common/Card";
 import TextInput from "~/components/common/TextInput";
 import { useNotification } from "~/contexts/NotificationContext";
+import { isEmailValid } from "~/utils";
+import axios from 'axios';
+import { useAuth } from "~/contexts/SurvivorContext";
 
 export default function LoginPage() {
+  const { storeOnLocalStorage } = useAuth();
   const { notify } = useNotification();
 
   const router = useRouter();
 
-  const [login, setLogin] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -21,23 +25,18 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const authResult = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ login, password }),
-      });
+      const { status, data } = await axios.post('/api/login', { email, password });
 
-      if ([404, 401].includes(authResult.status)) {
-        notify('error', 'Login or password is invalid');
-      } else if (authResult.status === 200) {
+      if ([404, 401].includes(status)) {
+        notify('error', 'Email or password is invalid');
+      } else if (status === 200) {
         notify('success', 'You have successfully logged in');
+
+        storeOnLocalStorage(data.survivorId);
 
         router.push('/');
       }
     } catch (err) {
-      console.error('err');
       console.error(err);
 
       notify('error', 'An error occurred while trying to login');
@@ -54,11 +53,14 @@ export default function LoginPage() {
             <h5 className="text-xl font-medium text-gray-900 dark:text-white">Sign-in on Nexus</h5>
 
             <TextInput
-              id="login"
-              name="Login"
-              placeholder="Enter your login"
-              value={login}
-              onChange={(e) => setLogin(e.target.value)}
+              id="email"
+              name="E-mail"
+              placeholder="Enter your e-mail"
+              type="email"
+              hasError={Boolean(email && !isEmailValid(email))}
+              errorText="Must be a valid e-mail"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
 
             <TextInput
@@ -77,7 +79,7 @@ export default function LoginPage() {
               text="Sign In"
               isLoading={isLoading}
               onClick={handleLogin}
-              disabled={!login || !password}
+              disabled={Boolean(!email || !isEmailValid(email)) || !password}
             />
 
             <div className="text-sm font-medium text-gray-500 dark:text-gray-300">

@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 
 import * as bcrypt from 'bcrypt';
+import { Survivor } from 'src/entities/survivor.entity';
 
 @Injectable()
 export class AuthService {
@@ -19,7 +20,10 @@ export class AuthService {
   async performLogin(email: string, password: string): Promise<object> {
     this.logger.log(`performLogin: Authenticating survivor with email ${email}`);
 
-    const account = await this.accountRepository.findOneBy({ email });
+    const account = await this.accountRepository.findOne({
+      where: { email },
+      relations: ['survivor'],
+    });
 
     if (!account) {
       this.logger.error(`performLogin: Survivor with email ${email} not found!`);
@@ -36,10 +40,11 @@ export class AuthService {
     }
 
     this.logger.log(`performLogin: Survivor #${account.id} successfully authenticated!`);
-    const accessToken = this.generateJwtToken(account);
+    const accessToken = await this.generateJwtToken(account);
 
     return {
       message: 'Survivor successfully authenticated!',
+      survivorId: account.survivor.id,
       accessToken,
     };
   }

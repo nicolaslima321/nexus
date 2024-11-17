@@ -1,18 +1,15 @@
 "use client"
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useCallback, useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-}
+import axios from 'axios';
+import { ISurvivor } from '~/interfaces';
 
 interface AuthContextType {
-  user: User | null;
+  storedSurvivor: ISurvivor | null;
   isAuthenticated: boolean;
-  login: (user: User) => void;
+  storeSurvivor: (survivor: ISurvivor) => void;
+  storeOnLocalStorage: (survivorId: string) => void;
   logout: () => void;
 }
 
@@ -23,35 +20,53 @@ interface ISurvivorAuthProvider {
 }
 
 export const SurvivorAuthProvider = ({ children }: ISurvivorAuthProvider) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [storedSurvivor, setStoredSurvivor] = useState<ISurvivor | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const router = useRouter();
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    const storedAuth = localStorage.getItem('isAuthenticated');
+  const fetchSurvivor = useCallback(async () => {
+    const isSurvivorAuthenticated = Boolean(
+      isAuthenticated || localStorage.getItem('isAuthenticated') === 'true'
+    );
 
-    if (storedUser && storedAuth === 'true') {
-      setUser(JSON.parse(storedUser));
-      setIsAuthenticated(true);
+    const survivorId = localStorage.getItem('survivorId');
+
+    if (isSurvivorAuthenticated && survivorId) {
+      await checkForSurvivor(survivorId);
     } else {
       logout();
     }
-  }, []);
+  }, [isAuthenticated]);
 
-  const login = (user: User) => {
-    setUser(user);
-    setIsAuthenticated(true);
+  useEffect(() => {
+    fetchSurvivor();
+  }, [isAuthenticated]);
 
-    localStorage.setItem('user', JSON.stringify(user));
+  const checkForSurvivor = async (id: string | number) => {
+    const { status, data: survivor } = await axios.get(`/api/survivor/${id}`);
+
+    if (status === 200) storeSurvivor(survivor);
+    else logout();
+  };
+
+  const storeOnLocalStorage = (survivorId: string) => {
+    localStorage.setItem('survivorId', survivorId);
     localStorage.setItem('isAuthenticated', 'true');
+
+    setIsAuthenticated(true);
+  };
+
+  const storeSurvivor = (survivor: ISurvivor) => {
+    setStoredSurvivor(survivor);
+
+    storeOnLocalStorage(survivor.id.toString());
   };
 
   const logout = () => {
-    setUser(null);
+    setStoredSurvivor(null);
     setIsAuthenticated(false);
 
-    localStorage.removeItem('user');
+    localStorage.removeItem('survivorId');
     localStorage.removeItem('isAuthenticated');
 
     const currentPath = window.location.pathname;
@@ -61,7 +76,7 @@ export const SurvivorAuthProvider = ({ children }: ISurvivorAuthProvider) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ storedSurvivor, isAuthenticated, storeSurvivor, storeOnLocalStorage, logout }}>
       {children}
     </AuthContext.Provider>
   );

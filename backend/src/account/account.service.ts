@@ -1,4 +1,4 @@
-import { Logger, InternalServerErrorException, BadRequestException, Injectable } from '@nestjs/common';
+import { Logger, UnprocessableEntityException, BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Survivor } from 'src/entities/survivor.entity';
@@ -20,9 +20,12 @@ export class AccountService {
   ) {}
 
   async initializeSurvivorAccount(queryRunner: QueryRunner, survivor: Survivor, accountData: CreateSurvivorDto) {
-    this.logger.log(`initializeSurvivorAccount: Initializing account for survivor #${survivor.id}...`);
-
     const { email, password, passwordConfirmation } = accountData;
+
+    this.logger.log(`initializeSurvivorAccount: Checking if e-mail ${email} is already in use...`);
+    await this.checkIfEmailExists(email);
+
+    this.logger.log(`initializeSurvivorAccount: Initializing account for survivor #${survivor.id}...`);
 
     if (password !== passwordConfirmation) {
       this.logger.error(`initializeSurvivorAccount: Passwords provided does not match!`);
@@ -41,9 +44,6 @@ export class AccountService {
       survivor,
     });
 
-    this.logger.log(`initializeSurvivorAccount: debug account: ${JSON.stringify(account)}`);
-    this.logger.log(`initializeSurvivorAccount: debug survivor: ${JSON.stringify(survivor)}`);
-
     const createdAccount = await queryRunner.manager.save(Account, account);
     this.logger.log(`initializeSurvivorAccount: Account for survivor #${survivor.id} created!`);
 
@@ -60,5 +60,15 @@ export class AccountService {
       account: createdAccount,
       accessToken,
     };
+  }
+
+  private async checkIfEmailExists(email: string) {
+    const account = await this.accountRepository.findOneBy({ email });
+
+    if (account) {
+      this.logger.error(`checkIfEmailExists: E-mail ${email} is already in use!`);
+
+      throw new UnprocessableEntityException('E-mail is already in use');
+    }
   }
 }
