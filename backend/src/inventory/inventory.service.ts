@@ -1,4 +1,4 @@
-import { Logger, BadRequestException, NotFoundException, Injectable } from '@nestjs/common';
+import { Logger, BadRequestException, InternalServerErrorException, NotFoundException, Injectable } from '@nestjs/common';
 import { Inventory } from 'src/entities/inventory.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -25,13 +25,13 @@ export class InventoryService {
   ) {}
 
   async initializeSurvivorInventory(queryRunner: QueryRunner, survivor: Survivor) {
-    const inventory = await this.inventoryRepository.create();
-
-    await queryRunner.manager.save(Inventory, inventory);
+    const inventory = await this.inventoryRepository.create({
+      survivor
+    });
 
     survivor.inventory = inventory;
 
-    await queryRunner.manager.save(Survivor, survivor);
+    await queryRunner.manager.save(Inventory, inventory);
 
     this.logger.log(`initializeSurvivorInventory: Survivor's (#${survivor.id}) inventory initialized!`);
 
@@ -82,6 +82,35 @@ export class InventoryService {
     this.logger.log(`exchangeSurvivorItems: The following items were exchanged [${exchangeReport}]`);
 
     return exchangeReport;
+  }
+
+  async getAverageOfItemsPerSurvivor() {
+    try {
+      this.logger.log('getAverageOfItemsPerSurvivor: Getting average of items per survivor...');
+      const result = await this.inventoryItemRepository
+        .createQueryBuilder('inventoryItem')
+        .select('inventoryItem.itemId', 'itemId')
+        .addSelect('item.name', 'itemName')
+        .addSelect('AVG(inventoryItem.quantity)', 'aeverageQuantityPerSurvivor')
+        .innerJoin('inventoryItem.inventory', 'inventory')
+        .innerJoin('inventory.survivor', 'survivor')
+        .innerJoin('inventoryItem.item', 'item')
+        .groupBy('inventoryItem.itemId')
+        .addGroupBy('item.name')
+        .getRawMany();
+
+      const formattedResult = result.map(({ itemId, itemName, aeverageQuantityPerSurvivor }) => ({
+        averageQuantityPerSurvivor: Math.round(Number(aeverageQuantityPerSurvivor)),
+        itemName,
+        itemId,
+      }));
+
+      return formattedResult;
+    } catch (error) {
+      this.logger.error('getAverageOfItemsPerSurvivor: Error while getting average of items per survivor!', error);
+
+      throw new InternalServerErrorException('Error while getting average of items per survivor');
+    }
   }
 
   private async validateExchangeItems(inventory: Inventory, itemsToExchange: ItemDto[]) {

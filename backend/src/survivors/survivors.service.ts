@@ -61,7 +61,9 @@ export class SurvivorsService {
   }
 
   async findAll(): Promise<Survivor[]> {
-    return await this.survivorRepository.find();
+    return await this.survivorRepository.find({
+      relations: ['inventory', 'inventory.inventoryItems', 'inventory.inventoryItems.item'],
+    });
   }
 
   async findOne(id: number): Promise<Survivor> {
@@ -97,6 +99,79 @@ export class SurvivorsService {
   }
 
   async generateReports() {
-    return {};
+    this.logger.log('generateReports: starting to generate reports...');
+
+    try {
+      this.logger.log('generateReports: get statistics about survivors and its health status...');
+      const statisticsAboutSurvivors = await this.getStatisticsAboutSurvivors();
+
+      this.logger.log('generateReports: get amount of item per survivor...');
+      const itemsPerSurvivorReport = await this.inventoryService.getAverageOfItemsPerSurvivor();
+
+      this.logger.log(`generateReports: Reports generated, retrieving to controller...`);
+
+      return {
+        statisticsAboutSurvivors,
+        itemsPerSurvivorReport,
+      };
+    } catch (error) {
+      this.logger.error(`generateReports: Error while generating reports`, error);
+
+      throw error;
+    }
+  }
+
+  async getStatisticsAboutSurvivors() {
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+
+    this.logger.error('oneMonthAgo');
+    this.logger.error(oneMonthAgo);
+
+    this.logger.error('oneMonthAgo.toISOString()');
+    this.logger.error(oneMonthAgo.toISOString());
+
+    const queryResult = await this.survivorRepository
+      .createQueryBuilder('survivor')
+      .select([
+        'COUNT(*) AS "totalSurvivors"',
+        'SUM(CASE WHEN survivor.infected = false THEN 1 ELSE 0 END) AS "totalOfHealthySurvivors"',
+        'SUM(CASE WHEN survivor.infected = true THEN 1 ELSE 0 END) AS "totalOfInfectedSurvivors"',
+        `(SELECT COUNT(*) FROM survivor AS s
+          WHERE s.infected = false AND s."createdAt" > :oneMonthAgo) AS "recentlyHealthySurvivors"`,
+        `(SELECT COUNT(*) FROM survivor AS s
+          WHERE s.infected = true AND s."createdAt" > :oneMonthAgo) AS "recentlyInfectedSurvivors"`,
+      ])
+      .setParameter('oneMonthAgo', oneMonthAgo)
+      .getRawOne();
+
+    this.logger.log(`getStatisticsAboutSurvivors: Reports generated, processing data...`);
+    const amountOfHealthyLastMonth = queryResult.recentlyHealthySurvivors || 0;
+    const totalOfHealthySurvivors = queryResult.totalOfHealthySurvivors || 0;
+
+    let healthyGrowthPercent;
+
+    if (amountOfHealthyLastMonth > 0) {
+      healthyGrowthPercent = ((amountOfHealthyLastMonth / (totalOfHealthySurvivors - amountOfHealthyLastMonth)) * 100).toFixed(2);
+    }
+
+    const amountOfInfectedLastMonth = queryResult.recentlyInfectedSurvivors || 0;
+    const totalOfInfectedSurvivors = queryResult.totalOfInfectedSurvivors || 0;
+
+    let infectedGrowthPercent;
+
+    if (amountOfInfectedLastMonth > 0) {
+      infectedGrowthPercent = ((amountOfInfectedLastMonth / (totalOfInfectedSurvivors - amountOfInfectedLastMonth)) * 100).toFixed(2);
+    }
+
+    return {
+      totalSurvivors: Number(queryResult.totalSurvivors),
+      totalOfHealthySurvivors: Number(totalOfHealthySurvivors),
+      totalOfInfectedSurvivors: Number(totalOfInfectedSurvivors),
+      recentlyInfected: Number(amountOfInfectedLastMonth),
+      recentlyHealthy: Number(amountOfHealthyLastMonth),
+      healthyGrowthPercent: Number(healthyGrowthPercent),
+      infectedGrowthPercent: Number(infectedGrowthPercent),
+    };
   }
 }

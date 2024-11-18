@@ -15,16 +15,17 @@ export default function ReportCard({ title, result, subTitle, balance, ...rest }
 
   return (
     <Card {...rest}>
-      <div className="max-w-[260px] w-screen md:max-w-[340px] md:w-[340px]">
+      <div className="max-w-[260px] h-[200] w-[100%] md:max-w-[340px] md:w-[340px]">
         <div className="p-3 sm:p-4">
           <Title variant="h6" text={title} />
 
           <div className="flex items-center mt-4 gap-2">
-            <Title variant="h3" text={result} />
+            <span className="hidden sm:block"><Title variant="h3" text={result} /></span>
+            <span className="block sm:hidden"><Title variant="h5" text={result} /></span>
 
             {Boolean(balance) &&
               <Badge
-                text={`${hasPositiveBalance ? '+' : '-' } ${balance}`}
+                text={`${hasPositiveBalance ? '+' : '-' } ${Math.round(balance)}%`}
                 color={hasPositiveBalance ? 'green' : 'red'}
               />
             }

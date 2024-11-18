@@ -37,6 +37,13 @@ export class SurvivorsController {
     return await this.survivorService.findAll();
   }
 
+  @Get('/reports')
+  @UseGuards(NexusAuthGuard)
+  async getReportsOfSurvivors() {
+    this.logger.log('getReportsOfSurvivors: generating reports of survivors..');
+    return await this.survivorService.generateReports();
+  }
+
   @Get(':id')
   @UseGuards(NexusAuthGuard)
   async findSurvivorById(@Param('id') id: string) {
@@ -99,11 +106,5 @@ export class SurvivorsController {
     console.log(exchangeReport);
 
     return exchangeReport;
-  }
-
-  @Get('/reports')
-  @UseGuards(NexusAuthGuard)
-  async getReportsOfSurvivors() {
-    return {};
   }
 }
