@@ -47,17 +47,10 @@ export const SurvivorAuthProvider = ({ children }: ISurvivorAuthProvider) => {
     const survivorId = localStorage.getItem("survivorId");
 
     if (isSurvivorAuthenticated && survivorId) {
-      await checkForSurvivor(survivorId);
+      if (!storedSurvivor) await checkForSurvivor(survivorId);
     } else {
       logout();
     }
-  }, [isAuthenticated]);
-
-  useEffect(() => {
-    if (!itsOnPagesWithoutAuth()) setAppIsLoading(true);
-    else setAppIsLoading(false);
-
-    fetchSurvivor();
   }, [isAuthenticated]);
 
   const checkForSurvivor = async (id: string | number) => {
@@ -86,7 +79,8 @@ export const SurvivorAuthProvider = ({ children }: ISurvivorAuthProvider) => {
   const storeSurvivor = (survivor: ISurvivor) => {
     setStoredSurvivor(survivor);
 
-    storeOnLocalStorage(survivor.id.toString());
+    const survivorId = survivor.id.toString();
+    storeOnLocalStorage(survivorId);
 
     setAppIsLoading(false);
   };
@@ -102,6 +96,13 @@ export const SurvivorAuthProvider = ({ children }: ISurvivorAuthProvider) => {
 
     if (!itsOnPagesWithoutAuth()) router.push("/login");
   };
+
+  useEffect(() => {
+    if (!itsOnPagesWithoutAuth()) setAppIsLoading(true);
+    else setAppIsLoading(false);
+
+    fetchSurvivor();
+  }, [isAuthenticated]);
 
   return (
     <AuthContext.Provider

@@ -1,5 +1,5 @@
 interface IAvatar {
-  image: string;
+  image?: string;
 }
 
 export default function Avatar({ image = "" }: IAvatar) {

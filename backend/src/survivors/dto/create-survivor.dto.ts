@@ -5,7 +5,10 @@ export class CreateSurvivorDto {
   public email?: string;
   public gender: genderEnum;
   public infected: boolean;
-  public lastLocation: JSON;
+  public lastLocation: {
+    latitude: number;
+    longitude: number;
+  };
   public name: string;
   public password?: string;
   public passwordConfirmation?: string;

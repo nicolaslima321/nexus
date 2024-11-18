@@ -51,7 +51,6 @@ export class SeedService implements OnModuleInit {
       const lastLocation = { latitude, longitude };
 
       const survivor = this.survivorRepository.create({
-        // @ts-expect-error
         gender: faker.datatype.boolean() ? 'male' : 'female',
         infected: false,
         name: 'Nexus Admin',

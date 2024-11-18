@@ -24,21 +24,20 @@ export default function SurvivorsPage() {
     name: "",
     gender: "",
     status: "",
-    isInfected: false,
+    infected: false,
     latitude: 0,
     longitude: 0,
-    /* This is a temporary solution to avoid the account creation step */
-    skipAccountCreation: true,
   });
 
   const handleSave = async () => {
     const survivorData = {
       ...targetSurvivor,
-      infected: targetSurvivor.isInfected,
       lastLocation: {
         latitude: targetSurvivor.latitude,
         longitude: targetSurvivor.longitude,
       },
+      /* This is a temporary solution to avoid the account creation step */
+      skipAccountCreation: true,
     };
 
     try {
@@ -54,9 +53,7 @@ export default function SurvivorsPage() {
 
   const disableSaveButton = () => {
     return Object.entries(targetSurvivor).some(([key, value]) => {
-      if (key === "isInfected" || key === "skipAccountCreation") {
-        return false;
-      }
+      if (key === "infected") return false;
 
       return value == 0 || value === "";
     });
@@ -101,7 +98,7 @@ export default function SurvivorsPage() {
     </svg>
   );
 
-  const NameTableCell = (key, survivor) => {
+  const NameTableCell = (key: number, survivor: ISurvivor) => {
     return (
       <div key={key} className="inline-flex items-center gap-2">
         <Avatar />
@@ -111,7 +108,7 @@ export default function SurvivorsPage() {
     );
   };
 
-  const StatusTableCell = (key, survivor) => {
+  const StatusTableCell = (key: number, survivor: ISurvivor) => {
     return (
       <div key={key}>
         <Badge
@@ -122,7 +119,7 @@ export default function SurvivorsPage() {
     );
   };
 
-  const CreationDataTableCell = (key, survivor) => {
+  const CreationDataTableCell = (key: number, survivor: ISurvivor) => {
     return <div key={key}>{new Date(survivor.createdAt).toDateString()}</div>;
   };
 

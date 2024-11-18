@@ -9,6 +9,7 @@ interface ISurvivorObject {
 
 interface ILoginReponse {
   accessToken: string;
+  survivorId: number;
   message: string;
 }
 

@@ -8,7 +8,7 @@ interface ITextInput {
   value: string | number;
   hasError: boolean;
   errorText: string;
-  onChange: () => void;
+  onChange: (e: any) => void;
 }
 
 export default function TextInput({

@@ -16,14 +16,34 @@ import Button from "~/components/common/Button";
 import { useAuth } from "~/contexts/SurvivorContext";
 import { useNotification } from "~/contexts/NotificationContext";
 
+
+
 export default function SurvivorsPage() {
   const { storedSurvivor } = useAuth();
   const { notify } = useNotification();
 
   const [survivors, setSurvivors] = useState<ISurvivor[]>([]);
-  const [currentSurvivor, setCurrentSurvivor] = useState<ISurvivor>({});
+  const [currentSurvivor, setCurrentSurvivor] = useState<ISurvivor>({
+    id: 0,
+    age: 0,
+    name: "",
+    gender: "",
+    status: "",
+    infected: false,
+    latitude: 0,
+    longitude: 0,
+    inventory: [],
+  });
 
-  const [itemObject, setItemObject] = useState({});
+  type ItemObject = {
+    id: number;
+    quantity: number;
+  };
+
+  const [itemObject, setItemObject] = useState<ItemObject>({
+    id: 0,
+    quantity: 0,
+  });
 
   const [openItemAddModal, setOpenItemAddModal] = useState(false);
   const [openItemExchangeModal, setOpenItemExchangeModal] = useState(false);
@@ -37,24 +57,23 @@ export default function SurvivorsPage() {
           text="Save"
           onClick={
             openItemAddModal
-              ? () => performAdd(currentSurvivor.id, itemObject)
-              : () => performExchange(currentSurvivor.id, itemObject)
+              ? () => performAdd(currentSurvivor.id!, itemObject)
+              : () => performExchange(currentSurvivor.id!, itemObject)
           }
         />
         <Button
           className="h-8 text-xs sm:text-md flex items-center bg-purple hover:bg-dark-purple dark:bg-gray-700 dark:hover:bg-gray-800"
+          text="Cancel"
           onClick={() => {
             setOpenItemAddModal(false);
             setOpenItemExchangeModal(false);
           }}
-          text="Cancel"
-          variant="secondary"
         />
       </div>
     );
   };
 
-  const performAdd = async (survivorId, item) => {
+  const performAdd = async (survivorId: number, item: ItemObject) => {
     try {
       const payload = {
         itemId: item.id,
@@ -69,7 +88,7 @@ export default function SurvivorsPage() {
     }
   };
 
-  const performExchange = async (survivorId, item) => {
+  const performExchange = async (survivorId: number, item: ItemObject) => {
     const payload = {
       survivorId,
       requesterSurvivorId: storedSurvivor!.id,
@@ -96,7 +115,7 @@ export default function SurvivorsPage() {
     }
   };
 
-  const handleActionClick = (action: "add" | "exchange", survivor) => {
+  const handleActionClick = (action: "add" | "exchange", survivor: ISurvivor) => {
     setCurrentSurvivor(survivor);
 
     if (action === "add") {
@@ -146,7 +165,7 @@ export default function SurvivorsPage() {
     </svg>
   );
 
-  const NameCell = (key, survivor) => {
+  const NameCell = (key: number, survivor: ISurvivor) => {
     return (
       <div key={key} className="inline-flex items-center gap-2">
         <Avatar />
@@ -156,10 +175,10 @@ export default function SurvivorsPage() {
     );
   };
 
-  const InventoryCell = (key, survivor) => {
+  const InventoryCell = (key: number, survivor: ISurvivor) => {
     return (
       <div key={key}>
-        <Tooltip text={inventoryToString(survivor.inventory)}>
+        <Tooltip text={inventoryToString(survivor.inventory!)}>
           <div className="inline-flex items-center gap-2">
             {inventoryToString(survivor.inventory)}
           </div>
@@ -168,7 +187,7 @@ export default function SurvivorsPage() {
     );
   };
 
-  const Action = (key, survivor) => {
+  const Action = (key: number, survivor: ISurvivor) => {
     return (
       <div key={key}>
         <IconButton
@@ -187,7 +206,7 @@ export default function SurvivorsPage() {
 
   const survivorTableHeaders = ["Name", "Inventory", "Action"];
 
-  const mapSurvivorInventory = (survivor) => {
+  const mapSurvivorInventory = (survivor: ISurvivor) => {
     const invItems = survivor?.inventory?.inventoryItems || [];
 
     const mappedInvItems = invItems.map(({ item, quantity }) => {
@@ -224,7 +243,7 @@ export default function SurvivorsPage() {
   const survivorsInventoryCount = useMemo(() => {
     if (!survivors || survivors.length === 0) return 0;
 
-    const mapQuantityPerInventory = (survivor) =>
+    const mapQuantityPerInventory = (survivor: ISurvivor) =>
       survivor?.inventory?.inventoryItems
         ?.map(({ quantity }) => Number(quantity))
         ?.reduce((acc, curr) => acc + curr, 0) || 0;
@@ -234,7 +253,7 @@ export default function SurvivorsPage() {
       .reduce((acc, curr) => acc + curr, 0);
   }, [survivors]);
 
-  const onUpdateItemObject = (key, value) =>
+  const onUpdateItemObject = (key: number, value: string | number | boolean) =>
     setItemObject({ ...itemObject, [key]: value });
 
   useEffect(() => {

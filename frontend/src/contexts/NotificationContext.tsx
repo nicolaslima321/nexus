@@ -17,7 +17,7 @@ interface NotificationContextType {
   showNotification: boolean;
   notification: INotification;
   setShowNotification: Dispatch<SetStateAction<boolean>>;
-  notify: (type: string, text: string) => void;
+  notify: (type: INotification['type'], text: string) => void;
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(
@@ -35,7 +35,7 @@ export function NotificationProvider({
     text: "",
   });
 
-  const notify = (type: string, text: string) => {
+  const notify = (type: INotification['type'], text: string) => {
     setNotification({
       type,
       text,

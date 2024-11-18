@@ -42,11 +42,11 @@ export default function SignupFirstStep({
   return (
     <>
       <TextInput
-        id="fullName"
+        id="name"
         name="Full Name"
         placeholder="Enter your full name"
-        value={survivor.fullName}
-        onChange={(e) => onUpdateSurvivor("fullName", e.target.value)}
+        value={survivor.name}
+        onChange={(e) => onUpdateSurvivor("name", e.target.value)}
       />
 
       <div className="sm:flex sm:flex-row sm:items-center sm:justify-between">
@@ -80,7 +80,7 @@ export default function SignupFirstStep({
         value={survivor.status}
         options={statusOptions}
         onChange={(e) => {
-          onUpdateSurvivor("isInfected", e.target.value === "infected");
+          onUpdateSurvivor("infected", e.target.value === "infected");
           onUpdateSurvivor("status", e.target.value);
         }}
       />

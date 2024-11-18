@@ -1,9 +1,21 @@
+import { IInventory } from "./inventory";
+
 export interface ISurvivor {
+  id?: number;
   age: number;
-  fullName: string;
+  name: string;
   gender: string;
+  infected: boolean;
+  latitude?: number;
+  longitude?: number;
+  lastLocation?: {
+    latitude: number | string,
+    longitude: number | string,
+  },
   status: string;
-  isInfected: boolean;
-  latitude: number;
-  longitude: number;
+  inventory?: IInventory[] | [];
 }
+
+export type ISurvivorRequestData  = {
+  skipAccountCreation?: boolean;
+} & ISurvivor;

@@ -22,10 +22,10 @@ export default function SignupPage() {
 
   const [survivor, setSurvivor] = useState<ISurvivor>({
     age: 0,
-    fullName: "",
+    name: "",
     gender: "",
     status: "",
-    isInfected: false,
+    infected: false,
     latitude: 0,
     longitude: 0,
   });
@@ -68,8 +68,7 @@ export default function SignupPage() {
       const survivorData = {
         ...survivor,
         ...account,
-        name: survivor.fullName,
-        infected: survivor.isInfected,
+        name: survivor.name,
         lastLocation: {
           latitude: survivor.latitude,
           longitude: survivor.longitude,
@@ -104,7 +103,7 @@ export default function SignupPage() {
     if (step === 2 && (hasPasswordWrong || hasInvalidEmail)) return true;
 
     return Object.entries(targetObject).some(([key, value]) => {
-      if (key === "isInfected") {
+      if (key === "infected") {
         return false;
       }
 
@@ -112,9 +111,10 @@ export default function SignupPage() {
     });
   };
 
-  const liColorClass = (givenStep) =>
+  const liColorClass = (givenStep: number) =>
     givenStep === step ? "text-blue-600 dark:text-blue-500" : "";
-  const spanColorClass = (givenStep) =>
+
+  const spanColorClass = (givenStep: number) =>
     givenStep === step
       ? "border-blue-600 dark:border-blue-500"
       : "border-gray-500 dark:border-gray-400";

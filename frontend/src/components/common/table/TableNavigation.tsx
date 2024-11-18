@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import Tooltip from "../Tooltip";
 type ITableRowCell = string[] | React.ReactNode[];
 
@@ -31,7 +31,7 @@ export default function TableNavigation({
     const center = 3;
 
     let start = Math.max(0, currentPage - center);
-    let end = Math.min(quantityOfPages, start + itemsPerPage);
+    const end = Math.min(quantityOfPages, start + itemsPerPage);
 
     if (end - start < itemsPerPage) {
       start = Math.max(0, end - itemsPerPage);

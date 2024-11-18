@@ -9,7 +9,7 @@ import Title from "~/components/common/Title";
 interface IReports {
   title: string;
   subTitle: string;
-  result: number;
+  result: number | string;
   balance: number;
 }
 
@@ -32,7 +32,18 @@ interface IGeneratedReports {
 
 export default function Home() {
   const [generatedReport, setGeneratedReport] =
-    useState<IGeneratedReports>(null);
+    useState<IGeneratedReports>({
+      itemsPerSurvivorReport: [],
+      statisticsAboutSurvivors: {
+        healthyGrowthPercent: 0,
+        infectedGrowthPercent: 0,
+        recentlyHealthy: 0,
+        recentlyInfected: 0,
+        totalOfHealthySurvivors: 0,
+        totalOfInfectedSurvivors: 0,
+        totalSurvivors: 0,
+      },
+    });
 
   const balanceOfCampGrown = useMemo(() => {
     if (!generatedReport) return 0;
@@ -51,8 +62,8 @@ export default function Home() {
     return balanceOfTotalGrowth * 100;
   }, [generatedReport]);
 
-  const reportsToRender = useMemo(() => {
-    let listOfReports;
+  const reportsToRender: IReports[] = useMemo(() => {
+    let listOfReports: IReports[] = [];
 
     if (!generatedReport) return [];
 

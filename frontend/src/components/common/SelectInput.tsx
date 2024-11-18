@@ -4,7 +4,7 @@ interface ISelectInput {
   type: string;
   options: { label: string | number; value: string | number }[];
   value: string | number;
-  onChange: () => void;
+  onChange: (e: any) => void;
 }
 
 export default function SelectInput({
@@ -14,7 +14,7 @@ export default function SelectInput({
   options,
   value,
 }: ISelectInput) {
-  const handleOnChange = (e) => {
+  const handleOnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     if (e.target.value) {
       onChange(e);
     }

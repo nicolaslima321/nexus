@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 import { getSurvivor } from "~/apis/survivor-api";
 
 export async function GET(
