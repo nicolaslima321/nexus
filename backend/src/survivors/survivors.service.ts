@@ -131,12 +131,6 @@ export class SurvivorsService {
     const oneMonthAgo = new Date();
     oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
 
-    this.logger.error('oneMonthAgo');
-    this.logger.error(oneMonthAgo);
-
-    this.logger.error('oneMonthAgo.toISOString()');
-    this.logger.error(oneMonthAgo.toISOString());
-
     const queryResult = await this.survivorRepository
       .createQueryBuilder('survivor')
       .select([

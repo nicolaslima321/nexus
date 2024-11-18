@@ -54,5 +54,10 @@ The technologies used on this project were:
 - The survivors are created by the `/survivor` page on the front-end, but they can also create their account from the signup page
   - Accounts are not created when a survivor is created on survivors panel, to sign in, they must sign up for an account (That could be an interesting improvement)
 
-- Unfortunately I ain't got time to do the Unit tests and E2E, I certainly consider it one of the biggest improvements to be made. If I had more time I would use Cypress on front-end (E2E) and Nest library (Jest under the hood) on Backend E2E, and Jest on Unit ones (Front and Back).
-- I started the implementation of OAuth with Github as well, but to save more time, I decided to move forward only with the regular login that I've created
+#### Testing
+- Unfortunately, I couldn’t implement unit tests and E2E tests due to time constraints. These are among the main improvements I’d prioritize:
+    - Frontend E2E: Cypress.
+    - Backend E2E: Nest testing library (built on Jest).
+    - Unit Tests: Jest for both frontend and backend.
+
+- I also started implementing OAuth with GitHub, but due to time constraints, I focused on completing the regular login functionality.
