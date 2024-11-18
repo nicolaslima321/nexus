@@ -38,15 +38,18 @@ export class InventoryService {
     return inventory;
   }
 
-  async addItemOnSurvivorInventory(item: ItemDto, survivor: Survivor) {
-    const { itemId } = item;
+  async addItemOnSurvivorInventory(itemDto: ItemDto, survivor: Survivor) {
+    const { itemId, quantity } = itemDto;
 
     this.logger.log(`addItemOnSurvivorInventory: Adding item with ID ${itemId} to survivor's #${survivor.id} inventory...`);
     this.logger.log(`addItemOnSurvivorInventory: Checking if item with ID ${itemId} exists...`);
 
-    if (this.itemExists(itemId)) {
+    const foundItem = await this.searchForItemId(itemId);
+
+    if (foundItem) {
       const inventoryItem = await this.inventoryItemRepository.create({
-        ...ItemDto,
+        quantity,
+        item: foundItem,
         inventory: survivor.inventory,
       });
 
@@ -59,27 +62,28 @@ export class InventoryService {
 
       throw new BadRequestException('Provided item to add on inventory does not exists!');
     }
+
   }
 
-  async exchangeSurvivorItems(survivor: Survivor, targetSurvivor: Survivor, itemsToExchange: ItemDto[]) {
-    this.logger.log(`exchangeSurvivorItems: Exchanging items between survivor #${survivor.id} and survivor #${targetSurvivor.id}`);
+  async exchangeSurvivorItem(survivor: Survivor, requesterSurvivor: Survivor, itemsToExchange: ItemDto) {
+    this.logger.log(`exchangeSurvivorItem: Exchanging items between survivor #${survivor.id} and survivor requester #${requesterSurvivor.id}`);
 
-    this.logger.log(`exchangeSurvivorItems: Validating items to exchange...`);
-    await this.validateExchangeItems(survivor.inventory, itemsToExchange);
+    this.logger.log(`exchangeSurvivorItem: Validating items to exchange...`);
+    await this.validateExchangeItem(survivor.inventory, itemsToExchange);
 
-    this.logger.log(`exchangeSurvivorItems: Performing exchange...`);
-    const exchangeReportList = await this.performExchange(survivor.inventory, targetSurvivor.inventory, itemsToExchange);
+    this.logger.log(`exchangeSurvivorItem: Performing exchange...`);
+    const exchangeReportList = await this.performExchange(survivor.inventory, requesterSurvivor.inventory, itemsToExchange);
 
-    this.logger.log(`exchangeSurvivorItems: Items exchanged successfully!`);
+    this.logger.log(`exchangeSurvivorItem: Items exchanged successfully!`);
 
-    this.logger.log(`exchangeSurvivorItems: Generating report...`);
+    this.logger.log(`exchangeSurvivorItem: Generating report...`);
     const exchangeReport = exchangeReportList.reduce((acc, curr, index) => {
       const separator = index === exchangeReportList.length - 1 ? '' : ', ';
 
       return acc + `${curr.item} (Quantity: ${curr.quantity})${separator}`;
     }, '');
 
-    this.logger.log(`exchangeSurvivorItems: The following items were exchanged [${exchangeReport}]`);
+    this.logger.log(`exchangeSurvivorItem: The following item was exchanged [${exchangeReport}]`);
 
     return exchangeReport;
   }
@@ -113,64 +117,98 @@ export class InventoryService {
     }
   }
 
-  private async validateExchangeItems(inventory: Inventory, itemsToExchange: ItemDto[]) {
-    const itemIds = itemsToExchange.map((item) => item.itemId);
-    const existingItems = await this.itemRepository.findByIds(itemIds);
+  private async validateExchangeItem(inventory: Inventory, itemToExchange: ItemDto) {
+    this.logger.log('validateExchangeItem: The follow item was provided to exchange', itemToExchange);
 
-    if (existingItems.length !== itemIds.length) {
-      this.logger.error(`validateExchangeItems: One or more items provided, does not exists!`);
+    const existingItem = await this.itemRepository.findOneBy({ id: itemToExchange.itemId });
 
-      throw new BadRequestException('One or more items provided, does not exists!');
+    if (!existingItem) {
+      this.logger.error(`validateExchangeItem: The provided item, does not exists!`);
+
+      throw new BadRequestException('The provided item, does not exists!');
     }
 
-    for (const exchangeItem of itemsToExchange) {
-      const inventoryItem = inventory.inventoryItems.find(
-        (invItem) => invItem.item.id === exchangeItem.itemId,
+    this.logger.log('validateExchangeItem: The provided item exists, proceeding..', existingItem.id);
+    const inventoryItem = inventory.inventoryItems.find(
+      (invItem) => invItem.item.id === existingItem.id,
+    );
+
+    if (!inventoryItem || inventoryItem.quantity < itemToExchange.quantity) {
+      this.logger.error(`validateExchangeItem: The item of ID ${itemToExchange.itemId} is not available on survivor's inventory, or there's no amount enough`);
+
+      throw new BadRequestException(
+        `The item of ID ${itemToExchange.itemId} is not available on survivor's inventory, or there's no amount enough`,
       );
-
-      if (!inventoryItem || inventoryItem.quantity < exchangeItem.quantity) {
-        this.logger.error(`validateExchangeItems: The item of ID ${exchangeItem.itemId} is not available on survivor's inventory, or there's no amount enough`);
-
-        throw new BadRequestException(
-          `The item of ID ${exchangeItem.itemId} is not available on survivor's inventory, or there's no amount enough`,
-        );
-      }
     }
+
+    this.logger.log('validateExchangeItem: The provided inventory exists, and is valid, proceeding..', inventoryItem);
   }
 
-  private async performExchange(inventory: Inventory, inventoryToReceive: Inventory, listOfItemsToExchange: ItemDto[]) {
+  private async performExchange(inventory: Inventory, requesterInventory: Inventory, itemToExchange: ItemDto) {
+    this.logger.log('performExchange: Performing exchange...');
     const exchangedItemsReport = [];
 
-    for (const itemToExchange of listOfItemsToExchange) {
-      const inventoryItemToRemove = inventory.inventoryItems.find(
-        (invItem) => invItem.item.id === itemToExchange.itemId,
-      );
+    const inventoryItemToRemove = inventory.inventoryItems.find(
+      (invItem) => Number(invItem.item.id) === Number(itemToExchange.itemId),
+    );
 
-      const inventoryItemToReceive = inventoryToReceive.inventoryItems.find(
-        (invItem) => invItem.item.id === itemToExchange.itemId,
-      );
+    const inventoryItemToReceive = requesterInventory.inventoryItems.find(
+      (invItem) => Number(invItem.item.id) === Number(itemToExchange.itemId),
+    );
 
-      if (inventoryItemToRemove && inventoryItemToReceive) {
+    this.logger.log('performExchange: Starting to perform exchange...');
+    if (inventoryItemToRemove) {
+      this.logger.log('performExchange: Survivor inventory is valid, proceeding...');
+
+      this.logger.log('performExchange: Checking if requester inventory is valid...');
+      if (!inventoryItemToReceive) {
+        this.logger.log('performExchange: Requester inventory does not exists, creating one...');
+
+        this.logger.log('performExchange: Initiating inventory with the exchanged item...');
+        const itemToReceive = await this.itemRepository.findOneBy({ id: itemToExchange.itemId });
+
+        const newInventoryItemToReceive = await this.inventoryItemRepository.create({
+          quantity: itemToExchange.quantity,
+          item: itemToReceive,
+          inventory: requesterInventory,
+        });
+
+        inventoryItemToRemove.quantity -= itemToExchange.quantity;
+
+        this.logger.log('performExchange: Updating both inventories...');
+        await this.inventoryItemRepository.save(inventoryItemToRemove);
+
+        await this.inventoryItemRepository.save(newInventoryItemToReceive);
+
+        this.logger.log('performExchange: Items successfully exchanged! Generating simple report...');
+        exchangedItemsReport.push({
+          item: newInventoryItemToReceive.item.name,
+          quantity: itemToExchange.quantity,
+        });
+
+        return exchangedItemsReport;
+      } else {
+        this.logger.log('performExchange: Requester inventory is okay...');
         inventoryItemToRemove.quantity -= itemToExchange.quantity;
         inventoryItemToReceive.quantity += itemToExchange.quantity;
 
+        this.logger.log('performExchange: Updating both inventories...');
         await this.inventoryItemRepository.save(inventoryItemToRemove);
         await this.inventoryItemRepository.save(inventoryItemToReceive);
 
+        this.logger.log('performExchange: Items successfully exchanged! Generating simple report...');
         exchangedItemsReport.push({
-          item: itemToExchange.name,
+          item: inventoryItemToReceive.item.name,
           quantity: itemToExchange.quantity,
-        })
+        });
+
+        return exchangedItemsReport;
       }
+    } else {
+      this.logger.error('performExchange: Survivor inventory is not valid, exchange cannot be performed!');
+
+      throw new BadRequestException('Survivor inventory is not valid, exchange cannot be performed!');
     }
-
-    return exchangedItemsReport;
-  }
-
-  private async itemExists(itemId: number) {
-    const foundItem = await this.searchForItemId(itemId);
-
-    return Boolean(foundItem);
   }
 
   private async searchForItemId(id: number) {

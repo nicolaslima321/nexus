@@ -7,8 +7,10 @@ import { Badge } from '~/components';
 import { routes } from './links';
 import Link from 'next/link';
 import useTheme from '~/hooks/Theme';
+import { useAuth } from '~/contexts/SurvivorContext';
 
 export default function AccountSection() {
+  const { logout } = useAuth();
   const { switchTheme } = useTheme();
 
   /** Mocked while the backend is not ready */
@@ -94,7 +96,7 @@ export default function AccountSection() {
 
           <Divider />
 
-          <MenuItem onClick={handleClose}><span className="text-md">Logout</span></MenuItem>
+          <MenuItem onClick={logout}><span className="text-md">Logout</span></MenuItem>
         </div>
       </Menu>
 
@@ -129,7 +131,7 @@ export default function AccountSection() {
 
           <Divider />
 
-          <MenuItem onClick={handleClose}>Logout</MenuItem>
+          <MenuItem onClick={logout}>Logout</MenuItem>
         </div>
       </Drawer>
     </div>

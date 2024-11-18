@@ -1,4 +1,4 @@
-import { Logger, Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Logger, Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UnprocessableEntityException } from '@nestjs/common';
 import { SurvivorsService } from './survivors.service';
 import { CreateSurvivorDto } from './dto/create-survivor.dto';
 import { UpdateSurvivorDto } from './dto/update-survivor.dto';
@@ -59,25 +59,12 @@ export class SurvivorsController {
     return survivorFound;
   }
 
-  @Patch(':id')
-  @UseGuards(NexusAuthGuard)
-  async updateSurvivor(@Param('id') id: string, @Body() updateSurvivorDto: UpdateSurvivorDto) {
-    return await this.survivorService.update(+id, updateSurvivorDto);
-  }
-
-  @Delete(':id')
-  removeSurvivor(@Param('id') id: string) {
-    return this.survivorService.remove(+id);
-  }
-
   @Post('/:id/inventory/add')
   @UseGuards(NexusAuthGuard)
-  async addOnInventory(@Param('id') id: string, @Body() addedItemsDto: ItemDto[]) {
+  async addOnInventory(@Param('id') id: string, @Body() addedItemDto: ItemDto) {
     const survivor = await this.survivorService.findWithInventory(+id);
 
-    for (const addedItem of addedItemsDto) {
-      await this.inventoryService.addItemOnSurvivorInventory(addedItem, survivor);
-    }
+    await this.inventoryService.addItemOnSurvivorInventory(addedItemDto, survivor);
 
     return {
       message: 'Items successfully added',
@@ -87,23 +74,16 @@ export class SurvivorsController {
   @Post('/inventory/exchange')
   @UseGuards(NexusAuthGuard)
   async exchangeInventory(@Body() exchangeDto: ExchangeDto) {
-    console.log('exchangeDto');
-    console.log(exchangeDto);
+    const { survivorId, requesterSurvivorId, itemToExchange } = exchangeDto;
 
-    const { survivorId, targetSurvivorId, itemsToExchange } = exchangeDto;
+    if (survivorId === requesterSurvivorId) {
+      throw new UnprocessableEntityException('Cannot exchange items with yourself');
+    }
 
     const survivor = await this.survivorService.findWithInventory(survivorId);
-    const targetSurvivor = await this.survivorService.findWithInventory(targetSurvivorId);
+    const requesterSurvivor = await this.survivorService.findWithInventory(requesterSurvivorId);
 
-    const exchangeReport = await this.inventoryService.exchangeSurvivorItems(survivor, targetSurvivor, itemsToExchange);
-
-    console.log('survivor');
-    console.log(survivor);
-    console.log('targetSurvivor');
-    console.log(targetSurvivor);
-
-    console.log('exchangeReport');
-    console.log(exchangeReport);
+    const exchangeReport = await this.inventoryService.exchangeSurvivorItem(survivor, requesterSurvivor, itemToExchange);
 
     return exchangeReport;
   }

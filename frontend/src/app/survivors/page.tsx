@@ -9,7 +9,7 @@ import Avatar from "~/components/common/Avatar";
 import { Badge } from "~/components";
 import Button from "~/components/common/Button";
 import Modal from "~/components/common/Modal";
-import SurvivorModal from "~/components/survivor-modal/SurvivorModal";
+import SurvivorModal from "~/components/modals/SurvivorModal";
 import { useNotification } from "~/contexts/NotificationContext";
 
 export default function SurvivorsPage() {

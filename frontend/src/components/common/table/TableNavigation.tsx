@@ -47,7 +47,7 @@ export default function TableNavigation({ tableItems, currentPage, onPaginateTo 
 
   const getBorderClass = (index: number) => {
     if (index === 0) return 'rounded-s-lg';
-    else if (index === 4) return 'rounded-e-lg';
+    else if (index === 4 || index === quantityOfPages - 1) return 'rounded-e-lg';
 
     return '';
   }

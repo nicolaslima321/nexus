@@ -23,3 +23,10 @@ export async function fetchSurvivors() {
   return await HttpService.get('/survivors');
 };
 
+export async function addItemOnInventory(id: number, data) {
+  return await HttpService.post(`/survivors/${id}/inventory/add`, data);
+}
+
+export async function exchangeItems(data) {
+  return await HttpService.post(`/survivors/inventory/exchange`, data);
+}

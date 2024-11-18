@@ -10,11 +10,11 @@ type Inventory = {
 export const inventoryToString = (inventory: Inventory[]) => {
   if (inventory?.every(({ quantity }) => quantity == 0)) return 'None';
 
-  const inventoryString = inventory.map(({ name, quantity }) => {
-    if (quantity == 0) return;
-
+  const inventoryStrings = inventory.filter(({ quantity }) => Number(quantity) > 0).map(({ name, quantity }) => {
     return `${quantity} ${name}`;
-  }).join(', ');
+  });
 
-  return inventoryString;
+  if (inventoryStrings.length == 1) return inventoryStrings[0];
+
+  return inventoryStrings.join(', ');
 }

@@ -6,12 +6,17 @@ import { faker } from '@faker-js/faker';
 import { Survivor } from 'src/entities/survivor.entity';
 import { Inventory } from 'src/entities/inventory.entity';
 import { InventoryItem } from 'src/entities/inventory-item.entity';
+import { Account } from 'src/entities/account.entity';
+
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class SeedService implements OnModuleInit {
   private readonly logger = new Logger(SeedService.name);
 
   constructor(
+    @InjectRepository(Account)
+    private accountRepository: Repository<Account>,
     @InjectRepository(Item)
     private itemRepository: Repository<Item>,
     @InjectRepository(Survivor)
@@ -25,11 +30,61 @@ export class SeedService implements OnModuleInit {
   async onModuleInit() {
     this.logger.log('onModuleInit: starting seed process..');
     await this.seedItems();
+    await this.seedAdmin();
 
     if (process.env.NODE_ENV !== 'development') {
       await this.seedSurvivors();
     } else {
       this.logger.log('onModuleInit: productive environment, skiping remaining seeds..');
+    }
+  }
+
+  private async seedAdmin() {
+    this.logger.log('seedAdmin: seeding admin account...');
+
+    const adminEmail = 'admin@nexus.com';
+    const existingAdmin = await this.accountRepository.findOneBy({ email: adminEmail });
+
+    if (!existingAdmin) {
+      const [latitude, longitude] = faker.location.nearbyGPSCoordinate();
+
+      const lastLocation = { latitude, longitude };
+
+      const survivor = this.survivorRepository.create({
+        // @ts-expect-error
+        gender: faker.datatype.boolean() ? 'male' : 'female',
+        infected: false,
+        name: 'Nexus Admin',
+        age: faker.number.int({ min: 18, max: 70 }),
+        createdAt: faker.date.recent({ days: 100 }),
+        lastLocation: lastLocation,
+      });
+
+      await this.survivorRepository.save(survivor);
+
+      const account = this.accountRepository.create({
+        email: adminEmail,
+        password: await bcrypt.hash('admin', 10),
+        survivor,
+      });
+
+      survivor.account = account;
+
+      await this.accountRepository.save(account);
+
+      const inventory = this.inventoryRepository.create({
+        survivor,
+      });
+
+      survivor.inventory = inventory;
+
+      await this.inventoryRepository.save(inventory);
+
+      await this.survivorRepository.save(survivor);
+
+      this.logger.log('seedAdmin: Admin account created!');
+    } else {
+      this.logger.log('seedAdmin: Admin account already exists, skipping seed.');
     }
   }
 
@@ -55,11 +110,11 @@ export class SeedService implements OnModuleInit {
   }
 
   private async seedSurvivors() {
-    const recordsToCreate = 100;
+    const recordsToCreate = 10;
 
     const existingSurvivors = await this.survivorRepository.find();
 
-    if (existingSurvivors.length < 100) {
+    if (existingSurvivors.length < 10) {
       for (let i = 0; i <= recordsToCreate; i++) {
         const randomItems = await this.itemRepository.find();
 
