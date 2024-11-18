@@ -10,8 +10,8 @@ import { Account } from 'src/entities/account.entity';
 import { DataSource, QueryRunner } from 'typeorm';
 
 interface ISurvivorAccountCreationData {
-  account: Account;
-  accessToken: string;
+  account?: Account;
+  accessToken?: string;
   survivor: Survivor;
 };
 
@@ -42,7 +42,13 @@ export class SurvivorsService {
       this.logger.log(`create: initializing survivor's (#${survivor.id}) inventory...`);
       await this.inventoryService.initializeSurvivorInventory(queryRunner, survivor);
 
-      const accountData = await this.accountService.initializeSurvivorAccount(queryRunner, survivor, createSurvivorDto);
+      let accountData = {};
+
+      if (createSurvivorDto.skipAccountCreation) {
+        this.logger.log(`create: Account creation was skipped, retrieving survivor only...`)
+      } else {
+        accountData = await this.accountService.initializeSurvivorAccount(queryRunner, survivor, createSurvivorDto);
+      }
 
       await queryRunner.commitTransaction();
 

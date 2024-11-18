@@ -1,15 +1,9 @@
 "use client";
 
-import SelectInput from "~/components/common/SelectInput";
-import TextInput from "~/components/common/TextInput";
-import { ISurvivor } from "~/interfaces";
+import TextInput from "../common/TextInput";
+import SelectInput from "../common/SelectInput";
 
-interface ISignupFirstStep {
-  survivor: ISurvivor;
-  onUpdateSurvivor: (key: string, value: string | number | boolean) => void;
-}
-
-export default function SignupFirstStep({ survivor, onUpdateSurvivor }: ISignupFirstStep) {
+export default function SurvivorModal({ survivor, onUpdateSurvivor}) {
   const genderOptions = [
     {
       label: "Male",
@@ -37,13 +31,13 @@ export default function SignupFirstStep({ survivor, onUpdateSurvivor }: ISignupF
   ];
 
   return (
-    <>
+    <div className="flex flex-col gap-2">
       <TextInput
         id="fullName"
         name="Full Name"
         placeholder="Enter your full name"
-        value={survivor.fullName}
-        onChange={(e) => onUpdateSurvivor('fullName', e.target.value)}
+        value={survivor.name}
+        onChange={(e) => onUpdateSurvivor('name', e.target.value)}
       />
 
       <div className="sm:flex sm:flex-row sm:items-center sm:justify-between">
@@ -105,6 +99,6 @@ export default function SignupFirstStep({ survivor, onUpdateSurvivor }: ISignupF
           />
         </div>
       </div>
-    </>
+    </div>
   );
 };

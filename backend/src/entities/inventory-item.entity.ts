@@ -1,8 +1,9 @@
-import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, ManyToOne, Unique } from 'typeorm';
 import { Inventory } from './inventory.entity';
 import { Item } from './item.entity';
 
 @Entity()
+@Unique(['inventory', 'item'])
 export class InventoryItem {
   @PrimaryGeneratedColumn()
   id: number;
@@ -15,5 +16,6 @@ export class InventoryItem {
   inventory: Inventory;
 
   @ManyToOne(() => Item)
+  @JoinColumn()
   item: Item;
 }

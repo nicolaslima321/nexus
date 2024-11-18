@@ -24,7 +24,11 @@ export default function IconButton({ tooltipText = '', icon, color, onClick }: I
 
   return (
     <Tooltip text={tooltipText}>
-      <button type="button" class={`text-white focus:ring-1 focus:outline-none font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center me-2 ${getColorClass()}`}>
+      <button
+        type="button"
+        onClick={onClick}
+        className={`text-white focus:ring-1 focus:outline-none font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center me-2 ${getColorClass()}`}
+      >
         {icon}
       </button>
     </Tooltip>

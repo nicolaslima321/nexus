@@ -13,11 +13,11 @@ export default function TableBody({ tableItems }: ITableBody) {
         <tr key={index} className="bg-white border-b hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-600">
           {tableRowCells.map((cell, index) => (
             index === 0 ?
-              <th key={`th-${index}`} scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+              <th key={`th-${index}`} scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white w-4/12">
                 {cell}
               </th>
             :
-              <td key={`row-${index}`} className="px-6 py-4">
+              <td key={`row-${index}`} className="px-6 py-4 w-4/12">
                 {cell}
               </td>
           ))}

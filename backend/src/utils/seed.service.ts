@@ -92,20 +92,21 @@ export class SeedService implements OnModuleInit {
         const hasItems = faker.datatype.boolean();
 
         if (hasItems) {
-          const itemsCount = faker.number.int({ min: 1, max: 5 });
+          const quantity = faker.number.int({ min: 0, max: 10 });
+          const randomIndex = faker.number.int({ min: 1, max: 2 });
 
-          for (let i = 0; i < itemsCount; i++) {
-            const quantity = faker.number.int({ min: 1, max: 10 });
-            const randomIndex = faker.number.int({ min: 0, max: 3 });
+          const invItems = [this.inventoryItemRepository.create({
+            inventory,
+            item: randomItems[randomIndex],
+            quantity,
+          }),
+          this.inventoryItemRepository.create({
+            inventory,
+            item: randomItems[randomIndex + 1],
+            quantity,
+          })];
 
-            const invItem = this.inventoryItemRepository.create({
-              inventory,
-              item: randomItems[randomIndex],
-              quantity,
-            });
-
-            this.inventoryItemRepository.save(invItem);
-          }
+          this.inventoryItemRepository.save(invItems);
         }
       }
 

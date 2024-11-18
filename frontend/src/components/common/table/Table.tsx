@@ -17,11 +17,10 @@ interface ITable {
 
 export default function Table({ tableHeaders, tableItems }: ITable) {
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [itemsToRender, setItemsToRender] = useState<ITableRowCell[]>([]);
   const totalOfItems = tableItems.length;
   const itemsPerPage = 5;
 
-  const lastFiveItems = useMemo(() => {
+  const lastFiveItems = useMemo<ITableRowCell[]>(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = Math.min(currentPage * itemsPerPage, totalOfItems);
 
@@ -33,7 +32,6 @@ export default function Table({ tableHeaders, tableItems }: ITable) {
   const onPaginateTo = (page: number) => setCurrentPage(page);
 
   useEffect(() => {
-    setItemsToRender(lastFiveItems);
   }, [currentPage]);
 
   return (
@@ -41,7 +39,7 @@ export default function Table({ tableHeaders, tableItems }: ITable) {
       <div className="relative overflow-x-auto rounded-lg border dark:border-0">
         <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
           <TableHeader headerItems={tableHeaders} />
-          <TableBody tableItems={itemsToRender} />
+          <TableBody tableItems={lastFiveItems} />
         </table>
       </div>
 
