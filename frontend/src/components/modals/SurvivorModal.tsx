@@ -3,30 +3,30 @@
 import TextInput from "../common/TextInput";
 import SelectInput from "../common/SelectInput";
 
-export default function SurvivorModal({ survivor, onUpdateSurvivor}) {
+export default function SurvivorModal({ survivor, onUpdateSurvivor }) {
   const genderOptions = [
     {
       label: "Male",
-      value: 'male',
+      value: "male",
     },
     {
       label: "Female",
-      value: 'female',
+      value: "female",
     },
     {
       label: "Other",
-      value: 'other',
-    }
+      value: "other",
+    },
   ];
 
   const statusOptions = [
     {
       label: "I'm infected",
-      value: 'infected',
+      value: "infected",
     },
     {
       label: "I'm healthy!",
-      value: 'healthy',
+      value: "healthy",
     },
   ];
 
@@ -37,7 +37,7 @@ export default function SurvivorModal({ survivor, onUpdateSurvivor}) {
         name="Full Name"
         placeholder="Enter your full name"
         value={survivor.name}
-        onChange={(e) => onUpdateSurvivor('name', e.target.value)}
+        onChange={(e) => onUpdateSurvivor("name", e.target.value)}
       />
 
       <div className="sm:flex sm:flex-row sm:items-center sm:justify-between">
@@ -48,7 +48,7 @@ export default function SurvivorModal({ survivor, onUpdateSurvivor}) {
             placeholder="Current latitude"
             type="number"
             value={survivor.latitude}
-            onChange={(e) => onUpdateSurvivor('latitude', e.target.value)}
+            onChange={(e) => onUpdateSurvivor("latitude", e.target.value)}
           />
         </div>
 
@@ -59,7 +59,7 @@ export default function SurvivorModal({ survivor, onUpdateSurvivor}) {
             placeholder="Current longitude"
             type="number"
             value={survivor.longitude}
-            onChange={(e) => onUpdateSurvivor('longitude', e.target.value)}
+            onChange={(e) => onUpdateSurvivor("longitude", e.target.value)}
           />
         </div>
       </div>
@@ -71,8 +71,8 @@ export default function SurvivorModal({ survivor, onUpdateSurvivor}) {
         value={survivor.status}
         options={statusOptions}
         onChange={(e) => {
-          onUpdateSurvivor('isInfected', e.target.value === 'infected');
-          onUpdateSurvivor('status', e.target.value);
+          onUpdateSurvivor("isInfected", e.target.value === "infected");
+          onUpdateSurvivor("status", e.target.value);
         }}
       />
 
@@ -84,7 +84,7 @@ export default function SurvivorModal({ survivor, onUpdateSurvivor}) {
             placeholder="Enter your age"
             type="number"
             value={survivor.age}
-            onChange={(e) => onUpdateSurvivor('age', e.target.value)}
+            onChange={(e) => onUpdateSurvivor("age", e.target.value)}
           />
         </div>
 
@@ -95,10 +95,10 @@ export default function SurvivorModal({ survivor, onUpdateSurvivor}) {
             placeholder="Enter your gender"
             value={survivor.gender}
             options={genderOptions}
-            onChange={(e) => onUpdateSurvivor('gender', e.target.value)}
+            onChange={(e) => onUpdateSurvivor("gender", e.target.value)}
           />
         </div>
       </div>
     </div>
   );
-};
+}

@@ -1,10 +1,16 @@
-"use client"
+"use client";
 
-import React, { createContext, useCallback, useContext, useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import axios from 'axios';
-import { ISurvivor } from '~/interfaces';
-import { useAppContext } from './AppContext';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useState,
+  useEffect,
+} from "react";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import { ISurvivor } from "~/interfaces";
+import { useAppContext } from "./AppContext";
 
 interface AuthContextType {
   storedSurvivor: ISurvivor | null;
@@ -30,15 +36,15 @@ export const SurvivorAuthProvider = ({ children }: ISurvivorAuthProvider) => {
   const itsOnPagesWithoutAuth = () => {
     const currentPath = window.location.pathname;
 
-    return ['/login', '/signup'].includes(currentPath);
+    return ["/login", "/signup"].includes(currentPath);
   };
 
   const fetchSurvivor = useCallback(async () => {
     const isSurvivorAuthenticated = Boolean(
-      isAuthenticated || localStorage.getItem('isAuthenticated') === 'true'
+      isAuthenticated || localStorage.getItem("isAuthenticated") === "true",
     );
 
-    const survivorId = localStorage.getItem('survivorId');
+    const survivorId = localStorage.getItem("survivorId");
 
     if (isSurvivorAuthenticated && survivorId) {
       await checkForSurvivor(survivorId);
@@ -59,20 +65,20 @@ export const SurvivorAuthProvider = ({ children }: ISurvivorAuthProvider) => {
       const { status, data: survivor } = await axios.get(`/api/survivor/${id}`);
 
       if (status === 200) {
-        storeSurvivor(survivor)
+        storeSurvivor(survivor);
 
-        if (itsOnPagesWithoutAuth()) router.push('/');
+        if (itsOnPagesWithoutAuth()) router.push("/");
       } else logout();
     } catch (error) {
-      console.error('Failed to perform survivor fetch', error);
+      console.error("Failed to perform survivor fetch", error);
 
       logout();
     }
   };
 
   const storeOnLocalStorage = (survivorId: string) => {
-    localStorage.setItem('survivorId', survivorId);
-    localStorage.setItem('isAuthenticated', 'true');
+    localStorage.setItem("survivorId", survivorId);
+    localStorage.setItem("isAuthenticated", "true");
 
     setIsAuthenticated(true);
   };
@@ -89,16 +95,24 @@ export const SurvivorAuthProvider = ({ children }: ISurvivorAuthProvider) => {
     setStoredSurvivor(null);
     setIsAuthenticated(false);
 
-    localStorage.removeItem('survivorId');
-    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem("survivorId");
+    localStorage.removeItem("isAuthenticated");
 
     setAppIsLoading(false);
 
-    if (!itsOnPagesWithoutAuth()) router.push('/login');
+    if (!itsOnPagesWithoutAuth()) router.push("/login");
   };
 
   return (
-    <AuthContext.Provider value={{ storedSurvivor, isAuthenticated, storeSurvivor, storeOnLocalStorage, logout }}>
+    <AuthContext.Provider
+      value={{
+        storedSurvivor,
+        isAuthenticated,
+        storeSurvivor,
+        storeOnLocalStorage,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -107,7 +121,7 @@ export const SurvivorAuthProvider = ({ children }: ISurvivorAuthProvider) => {
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };

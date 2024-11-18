@@ -1,4 +1,10 @@
-export default function Modal({ children, title, isOpen, onClose, footerContent }: IModal) {
+export default function Modal({
+  children,
+  title,
+  isOpen,
+  onClose,
+  footerContent,
+}: IModal) {
   return isOpen ? (
     <div
       id="modal"

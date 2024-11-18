@@ -12,6 +12,8 @@ interface ILoginReponse {
   message: string;
 }
 
-export async function performLogin(survivorLogin: ISurvivorObject): Promise<ILoginReponse> {
-  return await HttpService.post('/auth/login', survivorLogin);
-};
+export async function performLogin(
+  survivorLogin: ISurvivorObject,
+): Promise<ILoginReponse> {
+  return await HttpService.post("/auth/login", survivorLogin);
+}

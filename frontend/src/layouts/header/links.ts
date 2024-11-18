@@ -1,14 +1,14 @@
 export const routes = [
   {
-    title: 'Report',
-    to: '/',
+    title: "Report",
+    to: "/",
   },
   {
-    title: 'Survivors',
-    to: '/survivors',
+    title: "Survivors",
+    to: "/survivors",
   },
   {
-    title: 'Inventory',
-    to: '/inventory',
+    title: "Inventory",
+    to: "/inventory",
   },
 ];

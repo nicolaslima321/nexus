@@ -4,13 +4,13 @@ export async function GET() {
   try {
     const survivorsPayload = await fetchSurvivors();
 
-    return Response.json(survivorsPayload, { status: 200  });
+    return Response.json(survivorsPayload, { status: 200 });
   } catch (error) {
-    console.error('Failed to fetch survivors', error);
+    console.error("Failed to fetch survivors", error);
 
     return Response.json(
-      { error: 'An error ocurred while fetching survivors' },
-      { status: error?.status }
+      { error: "An error ocurred while fetching survivors" },
+      { status: error?.status },
     );
   }
 }
@@ -21,13 +21,13 @@ export async function POST(request: Request) {
 
     const creationPayload = await createSurvivor(survivorData);
 
-    return Response.json(creationPayload, { status: 200  });
+    return Response.json(creationPayload, { status: 200 });
   } catch (error) {
-    console.error('Failed to perform survivor creation', error);
+    console.error("Failed to perform survivor creation", error);
 
     return Response.json(
-      { error: 'An error ocurred while performing survivor creation' },
-      { status: 500 }
+      { error: "An error ocurred while performing survivor creation" },
+      { status: 500 },
     );
   }
 }

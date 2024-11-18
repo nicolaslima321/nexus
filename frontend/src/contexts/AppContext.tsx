@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useState, useContext, ReactNode } from "react";
 
 interface AppContextProps {
   appIsLoading: boolean;
@@ -22,7 +22,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 export const useAppContext = (): AppContextProps => {
   const context = useContext(AppContext);
   if (context === undefined) {
-    throw new Error('useAppContext must be used within an AppProvider');
+    throw new Error("useAppContext must be used within an AppProvider");
   }
   return context;
 };

@@ -9,30 +9,33 @@ interface ISignupFirstStep {
   onUpdateSurvivor: (key: string, value: string | number | boolean) => void;
 }
 
-export default function SignupFirstStep({ survivor, onUpdateSurvivor }: ISignupFirstStep) {
+export default function SignupFirstStep({
+  survivor,
+  onUpdateSurvivor,
+}: ISignupFirstStep) {
   const genderOptions = [
     {
       label: "Male",
-      value: 'male',
+      value: "male",
     },
     {
       label: "Female",
-      value: 'female',
+      value: "female",
     },
     {
       label: "Other",
-      value: 'other',
-    }
+      value: "other",
+    },
   ];
 
   const statusOptions = [
     {
       label: "I'm infected",
-      value: 'infected',
+      value: "infected",
     },
     {
       label: "I'm healthy!",
-      value: 'healthy',
+      value: "healthy",
     },
   ];
 
@@ -43,7 +46,7 @@ export default function SignupFirstStep({ survivor, onUpdateSurvivor }: ISignupF
         name="Full Name"
         placeholder="Enter your full name"
         value={survivor.fullName}
-        onChange={(e) => onUpdateSurvivor('fullName', e.target.value)}
+        onChange={(e) => onUpdateSurvivor("fullName", e.target.value)}
       />
 
       <div className="sm:flex sm:flex-row sm:items-center sm:justify-between">
@@ -54,7 +57,7 @@ export default function SignupFirstStep({ survivor, onUpdateSurvivor }: ISignupF
             placeholder="Current latitude"
             type="number"
             value={survivor.latitude}
-            onChange={(e) => onUpdateSurvivor('latitude', e.target.value)}
+            onChange={(e) => onUpdateSurvivor("latitude", e.target.value)}
           />
         </div>
 
@@ -65,7 +68,7 @@ export default function SignupFirstStep({ survivor, onUpdateSurvivor }: ISignupF
             placeholder="Current longitude"
             type="number"
             value={survivor.longitude}
-            onChange={(e) => onUpdateSurvivor('longitude', e.target.value)}
+            onChange={(e) => onUpdateSurvivor("longitude", e.target.value)}
           />
         </div>
       </div>
@@ -77,8 +80,8 @@ export default function SignupFirstStep({ survivor, onUpdateSurvivor }: ISignupF
         value={survivor.status}
         options={statusOptions}
         onChange={(e) => {
-          onUpdateSurvivor('isInfected', e.target.value === 'infected');
-          onUpdateSurvivor('status', e.target.value);
+          onUpdateSurvivor("isInfected", e.target.value === "infected");
+          onUpdateSurvivor("status", e.target.value);
         }}
       />
 
@@ -90,7 +93,7 @@ export default function SignupFirstStep({ survivor, onUpdateSurvivor }: ISignupF
             placeholder="Enter your age"
             type="number"
             value={survivor.age}
-            onChange={(e) => onUpdateSurvivor('age', e.target.value)}
+            onChange={(e) => onUpdateSurvivor("age", e.target.value)}
           />
         </div>
 
@@ -101,10 +104,10 @@ export default function SignupFirstStep({ survivor, onUpdateSurvivor }: ISignupF
             placeholder="Enter your gender"
             value={survivor.gender}
             options={genderOptions}
-            onChange={(e) => onUpdateSurvivor('gender', e.target.value)}
+            onChange={(e) => onUpdateSurvivor("gender", e.target.value)}
           />
         </div>
       </div>
     </>
   );
-};
+}

@@ -3,14 +3,20 @@ import Card from "../common/Card";
 import Title from "../common/Title";
 
 interface IReportCard {
-  title: string,
-  result: string | number,
-  subTitle: string,
+  title: string;
+  result: string | number;
+  subTitle: string;
   balance?: number;
   key?: string | number;
 }
 
-export default function ReportCard({ title, result, subTitle, balance, ...rest }: IReportCard) {
+export default function ReportCard({
+  title,
+  result,
+  subTitle,
+  balance,
+  ...rest
+}: IReportCard) {
   const hasPositiveBalance = balance && balance > 0;
 
   return (
@@ -20,18 +26,24 @@ export default function ReportCard({ title, result, subTitle, balance, ...rest }
           <Title variant="h6" text={title} />
 
           <div className="flex items-center mt-4 gap-2">
-            <span className="hidden sm:block"><Title variant="h3" text={result} /></span>
-            <span className="block sm:hidden"><Title variant="h5" text={result} /></span>
+            <span className="hidden sm:block">
+              <Title variant="h3" text={result} />
+            </span>
+            <span className="block sm:hidden">
+              <Title variant="h5" text={result} />
+            </span>
 
-            {Boolean(balance) &&
+            {Boolean(balance) && (
               <Badge
-                text={`${hasPositiveBalance ? '+' : '-' } ${Math.round(balance)}%`}
-                color={hasPositiveBalance ? 'green' : 'red'}
+                text={`${hasPositiveBalance ? "+" : "-"} ${Math.round(balance)}%`}
+                color={hasPositiveBalance ? "green" : "red"}
               />
-            }
+            )}
           </div>
 
-          <p className="font-xs text-black font-thin text-gray-700 dark:text-gray-400">{subTitle}</p>
+          <p className="font-xs text-black font-thin text-gray-700 dark:text-gray-400">
+            {subTitle}
+          </p>
         </div>
 
         <hr className="dark:border-gray-700" />

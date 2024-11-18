@@ -1,8 +1,8 @@
 "use client";
 
 import { Table } from "~/components/common";
-import { useEffect, useState, useMemo } from 'react';
-import axios from 'axios';
+import { useEffect, useState, useMemo } from "react";
+import axios from "axios";
 import Title from "~/components/common/Title";
 import { ISurvivor } from "~/interfaces";
 import Avatar from "~/components/common/Avatar";
@@ -21,9 +21,9 @@ export default function SurvivorsPage() {
 
   const [targetSurvivor, setTargetSurvivor] = useState<ISurvivor>({
     age: 0,
-    name: '',
-    gender: '',
-    status: '',
+    name: "",
+    gender: "",
+    status: "",
     isInfected: false,
     latitude: 0,
     longitude: 0,
@@ -39,13 +39,13 @@ export default function SurvivorsPage() {
         latitude: targetSurvivor.latitude,
         longitude: targetSurvivor.longitude,
       },
-    }
+    };
 
     try {
-      await axios.post('/api/survivor', survivorData);
+      await axios.post("/api/survivor", survivorData);
 
-      notify('success', 'Survivor created successfully!');
-    } catch(err) {
+      notify("success", "Survivor created successfully!");
+    } catch (err) {
       console.error(err);
     }
 
@@ -54,13 +54,13 @@ export default function SurvivorsPage() {
 
   const disableSaveButton = () => {
     return Object.entries(targetSurvivor).some(([key, value]) => {
-      if (key === 'isInfected' || key === 'skipAccountCreation') {
+      if (key === "isInfected" || key === "skipAccountCreation") {
         return false;
       }
 
-      return value == 0 || value === '';
+      return value == 0 || value === "";
     });
-  }
+  };
 
   const ModalFooter = () => {
     return (
@@ -79,11 +79,25 @@ export default function SurvivorsPage() {
         />
       </>
     );
-  }
+  };
 
   const AddIcon = (
-    <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-      <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14m-7 7V5"/>
+    <svg
+      className="w-6 h-6 text-gray-800 dark:text-white"
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <path
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        d="M5 12h14m-7 7V5"
+      />
     </svg>
   );
 
@@ -101,26 +115,18 @@ export default function SurvivorsPage() {
     return (
       <div key={key}>
         <Badge
-          text={survivor.infected ? 'Infected' : 'Healthy'}
-          color={survivor.infected ? 'red' : 'green'}
+          text={survivor.infected ? "Infected" : "Healthy"}
+          color={survivor.infected ? "red" : "green"}
         />
       </div>
     );
   };
 
   const CreationDataTableCell = (key, survivor) => {
-    return (
-      <div key={key}>
-        {new Date(survivor.createdAt).toDateString()}
-      </div>
-    );
+    return <div key={key}>{new Date(survivor.createdAt).toDateString()}</div>;
   };
 
-  const survivorTableHeaders = [
-    'Full Name',
-    'Status',
-    'Creation Date',
-  ];
+  const survivorTableHeaders = ["Full Name", "Status", "Creation Date"];
 
   const healthSurvivorsCount = useMemo(() => {
     if (!survivors || survivors.length === 0) return 0;
@@ -137,7 +143,7 @@ export default function SurvivorsPage() {
         return {
           ...item,
           quantity,
-        }
+        };
       });
 
       return {
@@ -166,7 +172,7 @@ export default function SurvivorsPage() {
 
   useEffect(() => {
     const fetchSurvivors = async () => {
-      const { data: survivorsList } = await axios.get('/api/survivor');
+      const { data: survivorsList } = await axios.get("/api/survivor");
 
       setSurvivors(survivorsList);
     };
@@ -176,8 +182,16 @@ export default function SurvivorsPage() {
 
   return (
     <div>
-      <Modal title="Create Survivor" isOpen={openModal} onClose={() => setOpenModal(false)} footerContent={<ModalFooter />}>
-        <SurvivorModal survivor={targetSurvivor} onUpdateSurvivor={onUpdateSurvivor} />
+      <Modal
+        title="Create Survivor"
+        isOpen={openModal}
+        onClose={() => setOpenModal(false)}
+        footerContent={<ModalFooter />}
+      >
+        <SurvivorModal
+          survivor={targetSurvivor}
+          onUpdateSurvivor={onUpdateSurvivor}
+        />
       </Modal>
 
       <div className="flex items-center justify-between mb-6">
@@ -193,7 +207,10 @@ export default function SurvivorsPage() {
         />
       </div>
 
-      <Table tableHeaders={survivorTableHeaders} tableItems={survivorTableItems} />
+      <Table
+        tableHeaders={survivorTableHeaders}
+        tableItems={survivorTableItems}
+      />
     </div>
   );
 }

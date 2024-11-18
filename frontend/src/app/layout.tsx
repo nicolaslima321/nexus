@@ -6,7 +6,7 @@ import Header from "~/layouts/header/Header";
 /* This provider is only used to avoid hydratation and compatibility errors with nextjs
  * ref: https://mui.com/material-ui/integrations/nextjs/#app-router
  */
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import { SurvivorAuthProvider } from "~/contexts/SurvivorContext";
 import Toast from "~/components/common/Toast";
 import { NotificationProvider } from "~/contexts/NotificationContext";
@@ -43,13 +43,11 @@ export default function RootLayout({
           <SurvivorAuthProvider>
             <NotificationProvider>
               <AppRouterCacheProvider>
-                <Header/>
+                <Header />
                 <Toast />
 
                 <div className="px-4 py-4 md:py-8 md:px-32 w-full h-full">
-                  <Template>
-                    {children}
-                  </Template>
+                  <Template>{children}</Template>
                 </div>
               </AppRouterCacheProvider>
             </NotificationProvider>

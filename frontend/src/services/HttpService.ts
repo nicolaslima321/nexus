@@ -1,5 +1,5 @@
-import axios, { AxiosError } from 'axios';
-import { cookies } from 'next/headers'
+import axios, { AxiosError } from "axios";
+import { cookies } from "next/headers";
 
 class HttpService {
   private api;
@@ -10,14 +10,13 @@ class HttpService {
     this.api = axios.create({
       baseURL,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       withCredentials: true,
     });
 
     this.api.interceptors.request.use(
       async (config) => {
-
         const token = await this.getJwt();
         if (token) {
           config.headers.Authorization = `Bearer ${token.value}`;
@@ -25,23 +24,22 @@ class HttpService {
 
         const apiKey = this.getApiKey();
         if (apiKey) {
-          config.headers['x-api-key'] = apiKey;
+          config.headers["x-api-key"] = apiKey;
         }
 
         return config;
       },
       (error) => {
         return Promise.reject(error);
-      }
+      },
     );
   }
 
   async getJwt() {
     const cookieStore = await cookies();
 
-    return cookieStore.get('accessToken');
+    return cookieStore.get("accessToken");
   }
-
 
   getApiKey() {
     return process.env.API_KEY;
@@ -76,11 +74,11 @@ class HttpService {
 
   handleError(error: AxiosError) {
     if (error.response) {
-      console.error('Response Error:', error.response.data);
+      console.error("Response Error:", error.response.data);
     } else if (error.request) {
-      console.error('Request Error:', error.request);
+      console.error("Request Error:", error.request);
     } else {
-      console.error('Error:', error.message);
+      console.error("Error:", error.message);
     }
     throw error;
   }

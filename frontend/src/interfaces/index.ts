@@ -1,1 +1,1 @@
-export type { ISurvivor } from './survivor';
+export type { ISurvivor } from "./survivor";

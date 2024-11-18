@@ -6,4 +6,4 @@ export interface ISurvivor {
   isInfected: boolean;
   latitude: number;
   longitude: number;
-};
+}

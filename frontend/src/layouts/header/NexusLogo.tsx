@@ -1,5 +1,6 @@
-import Image from 'next/image';
-import Logo from '~/assets/logo.png';
+import Image from "next/image";
+
+import Logo from "~/assets/logo.png";
 
 export default function NexusLogo() {
   return (
@@ -11,4 +12,4 @@ export default function NexusLogo() {
       width={32}
     />
   );
-};
+}

@@ -9,7 +9,10 @@ interface ISignupSecondStep {
   onUpdateAccount: (key: string, value: string | number | boolean) => void;
 }
 
-export default function SignupSecondStep({ account, onUpdateAccount }: ISignupSecondStep) {
+export default function SignupSecondStep({
+  account,
+  onUpdateAccount,
+}: ISignupSecondStep) {
   return (
     <>
       <TextInput
@@ -20,7 +23,7 @@ export default function SignupSecondStep({ account, onUpdateAccount }: ISignupSe
         hasError={Boolean(account.email && !isEmailValid(account.email))}
         errorText="Must be a valid e-mail"
         value={account.email}
-        onChange={(e) => onUpdateAccount('email', e.target.value)}
+        onChange={(e) => onUpdateAccount("email", e.target.value)}
       />
 
       <TextInput
@@ -29,9 +32,12 @@ export default function SignupSecondStep({ account, onUpdateAccount }: ISignupSe
         placeholder="Enter your password"
         type="password"
         value={account.password}
-        hasError={Boolean(account.password !== account.passwordConfirmation && account.passwordConfirmation)}
+        hasError={Boolean(
+          account.password !== account.passwordConfirmation &&
+            account.passwordConfirmation,
+        )}
         errorText="Passwords don't match"
-        onChange={(e) => onUpdateAccount('password', e.target.value)}
+        onChange={(e) => onUpdateAccount("password", e.target.value)}
       />
 
       <TextInput
@@ -40,10 +46,14 @@ export default function SignupSecondStep({ account, onUpdateAccount }: ISignupSe
         placeholder="Confirm your password"
         type="password"
         value={account.passwordConfirmation}
-        hasError={Boolean(account.password !== account.passwordConfirmation && account.password)}
+        hasError={Boolean(
+          account.password !== account.passwordConfirmation && account.password,
+        )}
         errorText="Passwords don't match"
-        onChange={(e) => onUpdateAccount('passwordConfirmation', e.target.value)}
+        onChange={(e) =>
+          onUpdateAccount("passwordConfirmation", e.target.value)
+        }
       />
     </>
   );
-};
+}

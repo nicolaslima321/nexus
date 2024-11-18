@@ -3,10 +3,10 @@ import TextInput from "../common/TextInput";
 
 export default function ItemModal({ item, onUpdateItem }) {
   const itemOptions = [
-    { id: 1, description: 'Water', name: 'Water', },
-    { id: 2, description: 'Food', name: 'Food', },
-    { id: 3, description: 'Medication', name: 'Medication', },
-    { id: 4, description: 'C-Virus Vaccine', name: 'C-Virus Vaccine', },
+    { id: 1, description: "Water", name: "Water" },
+    { id: 2, description: "Food", name: "Food" },
+    { id: 3, description: "Medication", name: "Medication" },
+    { id: 4, description: "C-Virus Vaccine", name: "C-Virus Vaccine" },
   ];
 
   const mappedOptions = itemOptions.map((item) => ({
@@ -22,7 +22,7 @@ export default function ItemModal({ item, onUpdateItem }) {
           name="Select the item to add"
           options={mappedOptions}
           value={item.id}
-          onChange={(e) => onUpdateItem('id', e.target.value)}
+          onChange={(e) => onUpdateItem("id", e.target.value)}
         />
       </div>
 
@@ -33,7 +33,7 @@ export default function ItemModal({ item, onUpdateItem }) {
           placeholder="Enter the quantity"
           type="number"
           value={item.quantity}
-          onChange={(e) => onUpdateItem('quantity', e.target.value)}
+          onChange={(e) => onUpdateItem("quantity", e.target.value)}
         />
       </div>
     </div>

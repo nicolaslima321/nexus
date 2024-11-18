@@ -1,1 +1,1 @@
-export { default as Badge } from './common/Badge';
+export { default as Badge } from "./common/Badge";

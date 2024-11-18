@@ -1,10 +1,9 @@
-"use client"
+"use client";
 
-import React, { useEffect, useMemo, useState } from 'react';
-import Tooltip from '../Tooltip';
-import TableHeader from './TableHeader';
-import TableBody from './TableBody';
-import TableNavigation from './TableNavigation';
+import React, { useEffect, useMemo, useState } from "react";
+import TableHeader from "./TableHeader";
+import TableBody from "./TableBody";
+import TableNavigation from "./TableNavigation";
 
 type ITableHeaderCell = string;
 
@@ -13,7 +12,7 @@ type ITableRowCell = string[] | React.ReactNode[];
 interface ITable {
   tableHeaders: ITableHeaderCell[];
   tableItems: ITableRowCell[];
-};
+}
 
 export default function Table({ tableHeaders, tableItems }: ITable) {
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -31,8 +30,7 @@ export default function Table({ tableHeaders, tableItems }: ITable) {
 
   const onPaginateTo = (page: number) => setCurrentPage(page);
 
-  useEffect(() => {
-  }, [currentPage]);
+  useEffect(() => {}, [currentPage]);
 
   return (
     <>
@@ -43,7 +41,11 @@ export default function Table({ tableHeaders, tableItems }: ITable) {
         </table>
       </div>
 
-      <TableNavigation tableItems={tableItems} currentPage={currentPage} onPaginateTo={onPaginateTo} />
+      <TableNavigation
+        tableItems={tableItems}
+        currentPage={currentPage}
+        onPaginateTo={onPaginateTo}
+      />
     </>
   );
-};
+}
