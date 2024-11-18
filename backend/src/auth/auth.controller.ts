@@ -17,22 +17,4 @@ export class AuthController {
 
     return authPayload;
   }
-
-  @Get('github')
-  @UseGuards(AuthGuard('github'))
-  async githubAuth(@Req() req) {
-    console.log(req);
-  }
-
-  @Get('github/callback')
-  @UseGuards(AuthGuard('github'))
-  githubAuthRedirect(@Req() req) {
-    console.log('req');
-    console.log(req);
-
-    return {
-      message: 'Login bem-sucedido',
-      user: req.user,
-    };
-  }
 }
