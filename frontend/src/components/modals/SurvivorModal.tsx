@@ -21,11 +21,11 @@ export default function SurvivorModal({ survivor, onUpdateSurvivor }) {
 
   const statusOptions = [
     {
-      label: "I'm infected",
+      label: "Infected",
       value: "infected",
     },
     {
-      label: "I'm healthy!",
+      label: "Healthy!",
       value: "healthy",
     },
   ];
@@ -34,8 +34,8 @@ export default function SurvivorModal({ survivor, onUpdateSurvivor }) {
     <div className="flex flex-col gap-2">
       <TextInput
         id="name"
-        name="Full Name"
-        placeholder="Enter your full name"
+        name="Survivor's full name"
+        placeholder="Enter the Survivor full name"
         value={survivor.name}
         onChange={(e) => onUpdateSurvivor("name", e.target.value)}
       />

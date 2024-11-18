@@ -102,7 +102,7 @@ export const SurvivorAuthProvider = ({ children }: ISurvivorAuthProvider) => {
     else setAppIsLoading(false);
 
     fetchSurvivor();
-  }, [isAuthenticated]);
+  }, []);
 
   return (
     <AuthContext.Provider
