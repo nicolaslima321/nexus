@@ -47,7 +47,7 @@ export const SurvivorAuthProvider = ({ children }: ISurvivorAuthProvider) => {
     const survivorId = localStorage.getItem("survivorId");
 
     if (isSurvivorAuthenticated && survivorId) {
-      if (!storedSurvivor) await checkForSurvivor(survivorId);
+      await checkForSurvivor(survivorId);
     } else {
       logout();
     }
@@ -79,7 +79,7 @@ export const SurvivorAuthProvider = ({ children }: ISurvivorAuthProvider) => {
   const storeSurvivor = (survivor: ISurvivor) => {
     setStoredSurvivor(survivor);
 
-    const survivorId = survivor.id.toString();
+    const survivorId = survivor.id!.toString();
     storeOnLocalStorage(survivorId);
 
     setAppIsLoading(false);
