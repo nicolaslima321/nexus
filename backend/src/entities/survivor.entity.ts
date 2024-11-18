@@ -23,7 +23,7 @@ export class Survivor {
   @Column('boolean')
   infected: boolean;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'createdAt' })
   createdAt: Date;
 
   @OneToOne(() => Account, (account) => account.survivor)
