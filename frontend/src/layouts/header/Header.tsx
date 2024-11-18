@@ -5,6 +5,7 @@ import AccountSection from "./AccountSection";
 import NavigationActions from "./NavigationActions";
 import NexusLogo from "./NexusLogo";
 import useTheme from "~/hooks/Theme";
+import Link from 'next/link';
 import { useAppContext } from "~/contexts/AppContext";
 
 export default function Header() {
@@ -28,12 +29,14 @@ export default function Header() {
     <header
       className="flex items-center justify-between bg-purple h-20 px-4 sm:px-32"
     >
-      <div className="w-[32] h-[32] flex items-center gap-6">
-        <NexusLogo/>
+      <div className="w-[32]">
+        <Link className="flex items-center gap-2" href="/">
+          <NexusLogo/>
 
-        <p className="invisible text-white sm:visible sm:text-l">
-          Survival Nexus
-        </p>
+          <p className="invisible text-white sm:visible sm:text-sm">
+            Survival Nexus
+          </p>
+        </Link>
       </div>
 
       {Boolean(isAuthenticated && !appIsLoading) && <div className="hidden text-white md:flex md:w-4/12 md:justify-between">

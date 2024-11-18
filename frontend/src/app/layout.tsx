@@ -46,9 +46,11 @@ export default function RootLayout({
                 <Header/>
                 <Toast />
 
-                <Template>
-                  {children}
-                </Template>
+                <div className="px-4 py-4 md:py-8 md:px-32 w-full h-full">
+                  <Template>
+                    {children}
+                  </Template>
+                </div>
               </AppRouterCacheProvider>
             </NotificationProvider>
           </SurvivorAuthProvider>

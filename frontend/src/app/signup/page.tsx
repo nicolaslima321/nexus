@@ -73,23 +73,19 @@ export default function SignupPage() {
         },
       };
 
-      const { status, data } = await axios.post('/api/signup', survivorData);
+      const { data } = await axios.post('/api/signup', survivorData);
 
-      if (status === 200) {
-        notify('success', 'You have successfully sign up!');
+      notify('success', 'You have successfully sign up!');
 
-        storeSurvivor(data.survivor);
+      storeSurvivor(data.survivor);
 
-        router.push('/');
-      } else if (status === 422) {
+      router.push('/');
+    } catch (err) {
+      if (err.status === 422) {
         notify('error', 'E-mail already in use!');
       } else {
-        notify('error', 'Failed to create account');
+        notify('error', 'An error occurred while trying to create your account');
       }
-    } catch (err) {
-      console.error(err);
-
-      notify('error', 'An error occurred while trying to create your account');
     }
 
     setIsCreatingSurvivor(false);

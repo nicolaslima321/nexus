@@ -25,21 +25,21 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const { status, data } = await axios.post('/api/login', { email, password });
+      const { data } = await axios.post('/api/login', { email, password });
 
-      if ([404, 401].includes(status)) {
-        notify('error', 'Email or password is invalid');
-      } else if (status === 200) {
-        notify('success', 'You have successfully logged in');
+      notify('success', 'You have successfully logged in');
 
-        storeOnLocalStorage(data.survivorId);
+      storeOnLocalStorage(data.survivorId);
 
-        router.push('/');
-      }
+      router.push('/');
     } catch (err) {
-      console.error(err);
+      if ([404, 401].includes(err.status)) {
+        notify('error', 'Email or password is invalid');
+      } else {
+        console.error(err);
 
-      notify('error', 'An error occurred while trying to login');
+        notify('error', 'An error occurred while trying to login');
+      }
     }
 
     setIsLoading(false);

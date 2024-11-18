@@ -7,7 +7,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
   const { appIsLoading } = useAppContext();
 
   return appIsLoading ? (
-    <div className="fixed top-[50%] w-full">
+    <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
       <div className="flex justify-center items-center space-x-1 text-md text-gray-700 dark:text-white">
         <svg fill='none' className="w-6 h-6 animate-spin" viewBox="0 0 32 32" xmlns='http://www.w3.org/2000/svg'>
           <path clipRule='evenodd'
@@ -19,7 +19,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
       </div>
     </div>
   ) : (
-    <div className="px-2 py-4 sm:px-32">
+    <div className="w-full">
       {children}
     </div>
   );
