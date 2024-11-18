@@ -44,7 +44,7 @@ The technologies used on this project were:
   - Creation and Management of Survivors and its Inventories of resources
   - Tracking of Resources consumed by survivors
   - Tracking of health of survivors
-  - Authentication system, in the entire app
+  - Authentication system, in the entire app with JWT
   - API Key Protection
 
 ## Developer Notes
